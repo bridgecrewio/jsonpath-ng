@@ -1,18 +1,16 @@
-Python JSONPath RW
-==================
+Python JSONPath Next-Generation
+===============================
 
-https://github.com/kennknowles/python-jsonpath-rw
-
-|Build Status| |Test coverage| |PyPi version| |PyPi downloads|
+A final implementation of JSONPath for Python, including arithmetic
+and binary comparison operators, as defined in the original `JSONPath proposal`_.
 
 This library provides a robust and significantly extended implementation
-of JSONPath for Python. It is tested with Python 2.6, 2.7, 3.2, 3.3. 
-*(On travis-ci there is a segfault when running the tests with pypy; I don't think the problem lies with this library)*.
+of JSONPath for Python. It is tested with Python 2.6, 2.7, 3.2, 3.3.
 
 This library differs from other JSONPath implementations in that it is a
 full *language* implementation, meaning the JSONPath expressions are
 first class objects, easy to analyze, transform, parse, print, and
-extend. (You can also execute them :-)
+extend.
 
 Quick Start
 -----------
@@ -21,7 +19,7 @@ To install, use pip:
 
 ::
 
-    $ pip install git+git://github.com/tomas-fp/python-jsonpath-rw.git#egg=jsonpath-rw
+    $ pip install git+git://github.com/tomas-fp/python-jsonpath-ng.git#egg=jsonpath-ng
 
 Then:
 
@@ -29,7 +27,7 @@ Then:
 
     $ python
 
-    >>> from jsonpath_rw import jsonpath, parse
+    >>> from jsonpath_ng import jsonpath, parse
 
     # A robust parser, not just a regex. (Makes powerful extensions possible; see below)
     >>> jsonpath_expr = parse('foo[*].baz')
@@ -51,11 +49,12 @@ Then:
     >>> [match.value for match in parse('a.*.b.`parent`.c').find({'a': {'x': {'b': 1, 'c': 'number one'}, 'y': {'b': 2, 'c': 'number two'}}})]
     ['number two', 'number one']
 
-    # You can also build expressions directly quite easily 
-    >>> from jsonpath_rw.jsonpath import Fields
-    >>> from jsonpath_rw.jsonpath import Slice
+    # You can also build expressions directly quite easily
+    >>> from jsonpath_ng.jsonpath import Fields
+    >>> from jsonpath_ng.jsonpath import Slice
 
     >>> jsonpath_expr_direct = Fields('foo').child(Slice('*')).child(Fields('baz'))  # This is equivalent
+
 
 JSONPath Syntax
 ---------------
@@ -151,7 +150,7 @@ Extensions
 -  *Path data*: The result of ``JsonPath.find`` provide detailed context
    and path data so it is easy to traverse to parent objects, print full
    paths to pieces of data, and generate automatic ids.
--  *Automatic Ids*: If you set ``jsonpath_rw.auto_id_field`` to a value
+-  *Automatic Ids*: If you set ``jsonpath_ng.auto_id_field`` to a value
    other than None, then for any piece of data missing that field, it
    will be replaced by the JSONPath to it, giving automatic unique ids
    to any piece of data. These ids will take into account any ids
@@ -164,7 +163,7 @@ Extensions
 More to explore
 ---------------
 
-There are way too many jsonpath implementations out there to discuss.
+There are way too many JSONPath implementations out there to discuss.
 Some are robust, some are toy projects that still work fine, some are
 exercises. There will undoubtedly be many more. This one is made for use
 in released, maintained code, and in particular for programmatic access
@@ -205,13 +204,13 @@ This package is authored and maintained by:
 
 -  `Kenn Knowles <https://github.com/kennknowles>`__
    (`@kennknowles <https://twitter.com/KennKnowles>`__)
-   
-with the help of patches submitted by `these contributors <https://github.com/kennknowles/python-jsonpath-rw/graphs/contributors>`__.
+
+with the help of patches submitted by `these contributors <https://github.com/kennknowles/python-jsonpath-ng/graphs/contributors>`__.
 
 Copyright and License
 ---------------------
 
-Copyright 2013- Kenneth Knowles
+Copyright 2013 - Kenneth Knowles
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may
 not use this file except in compliance with the License. You may obtain
@@ -227,11 +226,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-.. |Build Status| image:: https://travis-ci.org/kennknowles/python-jsonpath-rw.png?branch=master
-   :target: https://travis-ci.org/kennknowles/python-jsonpath-rw
-.. |Test coverage| image:: https://coveralls.io/repos/kennknowles/python-jsonpath-rw/badge.png?branch=master
-   :target: https://coveralls.io/r/kennknowles/python-jsonpath-rw
-.. |PyPi version| image:: https://pypip.in/v/jsonpath-rw/badge.png
-   :target: https://pypi.python.org/pypi/jsonpath-rw
-.. |PyPi downloads| image:: https://pypip.in/d/jsonpath-rw/badge.png
-   :target: https://pypi.python.org/pypi/jsonpath-rw
+.. _`JSONPath proposal`: http://goessner.net/articles/JsonPath/
+.. |Build Status| image:: https://travis-ci.org/kennknowles/python-jsonpath-ng.png?branch=master
+   :target: https://travis-ci.org/kennknowles/python-jsonpath-ng
+.. |Test coverage| image:: https://coveralls.io/repos/kennknowles/python-jsonpath-ng/badge.png?branch=master
+   :target: https://coveralls.io/r/kennknowles/python-jsonpath-ng
+.. |PyPi version| image:: https://pypip.in/v/jsonpath-ng/badge.png
+   :target: https://pypi.python.org/pypi/jsonpath-ng
+.. |PyPi downloads| image:: https://pypip.in/d/jsonpath-ng/badge.png
+   :target: https://pypi.python.org/pypi/jsonpath-ng

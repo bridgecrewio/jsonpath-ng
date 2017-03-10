@@ -3,21 +3,21 @@ import setuptools
 
 
 setuptools.setup(
-    name='jsonpath-rw',
-    version='1.4.0',
+    name='jsonpath-ng',
+    version='1.0.0',
     description=(
         'A robust and significantly extended implementation '
         'of JSONPath for Python, with a clear AST for metaprogramming.'
     ),
     author='Kenneth Knowles',
     author_email='kenn.knowles@gmail.com',
-    url='https://github.com/kennknowles/python-jsonpath-rw',
+    url='https://github.com/tomas-fp/python-jsonpath-ng',
     license='Apache 2.0',
     long_description=io.open('README.rst', encoding='utf-8').read(),
-    packages=['jsonpath_rw', 'jsonpath_rw.bin'],
+    packages=['jsonpath_ng', 'jsonpath_ng.bin'],
     entry_points={
         'console_scripts': [
-            'jsonpath.py=jsonpath_rw.bin.jsonpath:entry_point'
+            'jsonpath.py=jsonpath_ng.bin.jsonpath:entry_point'
         ],
     },
     test_suite='tests',
