@@ -2,13 +2,15 @@ from __future__ import unicode_literals, print_function, absolute_import, divisi
 import logging
 import six
 from six.moves import xrange
-from itertools import *
+from itertools import *  # noqa
 
+# Get logger name
 logger = logging.getLogger(__name__)
 
 # Turn on/off the automatic creation of id attributes
 # ... could be a kwarg pervasively but uses are rare and simple today
 auto_id_field = None
+
 
 class JSONPath(object):
     """

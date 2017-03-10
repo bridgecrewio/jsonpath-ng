@@ -6,8 +6,10 @@ import ply.lex
 
 logger = logging.getLogger(__name__)
 
+
 class JsonPathLexerError(Exception):
     pass
+
 
 class JsonPathLexer(object):
     '''
