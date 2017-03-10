@@ -54,6 +54,7 @@ class JSONPath(object):
         else:
             return DatumInContext(value, path=Root(), context=None)
 
+
 class DatumInContext(object):
     """
     Represents a datum along a path from a context.
@@ -71,6 +72,7 @@ class DatumInContext(object):
     context within that passed in, so an object can be built from the inside
     out.
     """
+
     @classmethod
     def wrap(cls, data):
         if isinstance(data, cls):
@@ -436,7 +438,7 @@ class Fields(JSONPath):
             return AutoIdForDatum(datum)
         else:
             try:
-                field_value = datum.value[field] # Do NOT use `val.get(field)` since that confuses None as a value and None due to `get`
+                field_value = datum.value[field]  # Do NOT use `val.get(field)` since that confuses None as a value and None due to `get`
                 return DatumInContext(value=field_value, path=Fields(field), context=datum)
             except (TypeError, KeyError, AttributeError):
                 return None
@@ -452,11 +454,11 @@ class Fields(JSONPath):
                 return ()
 
     def find(self, datum):
-        datum  = DatumInContext.wrap(datum)
+        datum = DatumInContext.wrap(datum)
 
-        return  [field_datum
-                 for field_datum in [self.get_field_datum(datum, field) for field in self.reified_fields(datum)]
-                 if field_datum is not None]
+        return [field_datum
+                for field_datum in [self.get_field_datum(datum, field) for field in self.reified_fields(datum)]
+                if field_datum is not None]
 
     def update(self, data, val):
         for field in self.reified_fields(DatumInContext.wrap(data)):
@@ -465,7 +467,6 @@ class Fields(JSONPath):
                     val(data[field], data, field)
                 else:
                     data[field] = val
-                data[field] = val
         return data
 
     def __str__(self):
