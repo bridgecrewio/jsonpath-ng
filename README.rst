@@ -21,7 +21,7 @@ To install, use pip:
 
 ::
 
-    $ pip install jsonpath-rw
+    $ pip install git+git://github.com/tomas-fp/python-jsonpath-rw.git#egg=jsonpath-rw
 
 Then:
 
