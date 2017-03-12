@@ -4,6 +4,12 @@ Python JSONPath Next-Generation
 A final implementation of JSONPath for Python, including arithmetic
 and binary comparison operators, as defined in the original `JSONPath proposal`_.
 
+This packages merges both `jsonpath-rw`_ and `jsonpath-rw-ext`_ and
+provides several AST API enhancements, such as the ability to update or removes nodes in the tree.
+
+About
+-----
+
 This library provides a robust and significantly extended implementation
 of JSONPath for Python. It is tested with Python 2.6, 2.7, 3.2, 3.3.
 
@@ -19,7 +25,7 @@ To install, use pip:
 
 ::
 
-    $ pip install git+git://github.com/tomas-fp/python-jsonpath-ng.git#egg=jsonpath-ng
+    $ pip install --upgrade jsonpath-ng
 
 Then:
 
@@ -54,6 +60,18 @@ Then:
     >>> from jsonpath_ng.jsonpath import Slice
 
     >>> jsonpath_expr_direct = Fields('foo').child(Slice('*')).child(Fields('baz'))  # This is equivalent
+
+
+Using the extended parser:
+
+.. code:: python
+
+  $ python
+
+  >>> from jsonpath_ng.ext import parse
+
+  # A robust parser, not just a regex. (Makes powerful extensions possible; see below)
+  >>> jsonpath_expr = parse('foo[*].baz')
 
 
 JSONPath Syntax
@@ -144,8 +162,9 @@ easy to do so directly, and here are some examples:
 -  ``Where(Slice(), Fields('subfield'))``
 -  ``Descendants(jsonpath, jsonpath)``
 
-Extensions
-----------
+
+Extras
+------
 
 -  *Path data*: The result of ``JsonPath.find`` provide detailed context
    and path data so it is easy to traverse to parent objects, print full
@@ -159,6 +178,69 @@ Extensions
    object, this library uses ```this```. In general, any string
    contained in backquotes can be made to be a new operator, currently
    by extending the library.
+
+
+Extensions
+----------
+
++--------------+----------------------------------------------+
+| name         | Example                                      |
++==============+==============================================+
+| len          | - $.objects.`len`                            |
++--------------+----------------------------------------------+
+| sub          | - $.field.`sub(/foo\\\\+(.*)/, \\\\1)`       |
++--------------+----------------------------------------------+
+| split        | - $.field.`split(+, 2, -1)`                  |
+|              | - $.field.`split(sep, segement, maxsplit)`   |
++--------------+----------------------------------------------+
+| sorted       | - $.objects.`sorted`                         |
+|              | - $.objects[\\some_field]                    |
+|              | - $.objects[\\some_field,/other_field]       |
++--------------+----------------------------------------------+
+| filter       | - $.objects[?(@some_field > 5)]              |
+|              | - $.objects[?some_field = "foobar")]         |
+|              | - $.objects[?some_field > 5 & other < 2)]    |
++--------------+----------------------------------------------+
+| arithmetic   | - $.foo + "_" + $.bar                        |
+| (-+*/)       | - $.foo * 12                                 |
+|              | - $.objects[*].cow + $.objects[*].cat        |
++--------------+----------------------------------------------+
+
+About arithmetic and string
+---------------------------
+
+Operations are done with python operators and allows types that python
+allows, and return [] if the operation can be done due to incompatible types.
+
+When operators are used, a jsonpath must be be fully defined otherwise
+jsonpath-rw-ext can't known if the expression is a string or a jsonpath field,
+in this case it will choice string as type.
+
+Example with data::
+
+    {
+        'cow': 'foo',
+        'fish': 'bar'
+    }
+
+| **cow + fish** returns **cowfish**
+| **$.cow + $.fish** returns **foobar**
+| **$.cow + "_" + $.fish** returns **foo_bar**
+| **$.cow + "_" + fish** returns **foo_fish**
+
+About arithmetic and list
+-------------------------
+
+Arithmetic can be used against two lists if they have the same size.
+
+Example with data::
+
+    {'objects': [
+        {'cow': 2, 'cat': 3},
+        {'cow': 4, 'cat': 6}
+    ]}
+
+| **$.objects[\*].cow + $.objects[\*].cat** returns **[6, 9]**
 
 More to explore
 ---------------
@@ -211,6 +293,7 @@ Copyright and License
 ---------------------
 
 Copyright 2013 - Kenneth Knowles
+Copyright 2017 - Tomas Aparicio
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may
 not use this file except in compliance with the License. You may obtain
@@ -227,6 +310,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 .. _`JSONPath proposal`: http://goessner.net/articles/JsonPath/
+.. _`jsonpath-rw`: https://github.com/kennknowles/python-jsonpath-rw
+.. _`jsonpath-rw-ext`: https://pypi.python.org/pypi/jsonpath-rw-ext/
+
 .. |Build Status| image:: https://travis-ci.org/kennknowles/python-jsonpath-ng.png?branch=master
    :target: https://travis-ci.org/kennknowles/python-jsonpath-ng
 .. |Test coverage| image:: https://coveralls.io/repos/kennknowles/python-jsonpath-ng/badge.png?branch=master

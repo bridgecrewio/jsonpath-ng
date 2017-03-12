@@ -4,13 +4,13 @@ import setuptools
 
 setuptools.setup(
     name='jsonpath-ng',
-    version='1.0.0',
+    version='1.4.1',
     description=(
         'A robust and significantly extended implementation '
         'of JSONPath for Python, with a clear AST for metaprogramming.'
     ),
-    author='Kenneth Knowles',
-    author_email='kenn.knowles@gmail.com',
+    author='Tomas Aparicio',
+    author_email='tomas@aparicio.me',
     url='https://github.com/tomas-fp/python-jsonpath-ng',
     license='Apache 2.0',
     long_description=io.open('README.rst', encoding='utf-8').read(),

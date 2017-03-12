@@ -13,6 +13,7 @@
 parser.out
 .coverage
 
+build
 /jsonpath_rw/VERSION
 
 .idea
