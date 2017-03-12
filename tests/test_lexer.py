@@ -4,7 +4,7 @@ import unittest
 
 from ply.lex import LexToken
 
-from jsonpath_rw.lexer import JsonPathLexer, JsonPathLexerError
+from jsonpath_ng.lexer import JsonPathLexer, JsonPathLexerError
 
 class TestLexer(unittest.TestCase):
 

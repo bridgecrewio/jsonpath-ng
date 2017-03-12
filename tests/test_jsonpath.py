@@ -1,11 +1,11 @@
 from __future__ import unicode_literals, print_function, absolute_import, division, generators, nested_scopes
 import unittest
 
-from jsonpath_rw import jsonpath # For setting the global auto_id_field flag
+from jsonpath_ng import jsonpath # For setting the global auto_id_field flag
 
-from jsonpath_rw.parser import parse
-from jsonpath_rw.jsonpath import *
-from jsonpath_rw.lexer import JsonPathLexerError
+from jsonpath_ng.parser import parse
+from jsonpath_ng.jsonpath import *
+from jsonpath_ng.lexer import JsonPathLexerError
 
 class TestDatumInContext(unittest.TestCase):
     """

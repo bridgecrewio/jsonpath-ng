@@ -13,21 +13,21 @@
 # under the License.
 
 """
-test_jsonpath_rw_ext
+test_jsonpath_ng_ext
 ----------------------------------
 
-Tests for `jsonpath_rw_ext` module.
+Tests for `jsonpath_ng_ext` module.
 """
 
-from jsonpath_rw import jsonpath  # For setting the global auto_id_field flag
+from jsonpath_ng import jsonpath  # For setting the global auto_id_field flag
 from oslotest import base
 from six import moves
 import testscenarios
 
-from jsonpath_rw_ext import parser
+from jsonpath_ng_ext import parser
 
 
-class TestJsonpath_rw_ext(testscenarios.WithScenarios,
+class Testjsonpath_ng_ext(testscenarios.WithScenarios,
                           base.BaseTestCase):
     scenarios = [
         ('sorted_list', dict(string='objects.`sorted`',
@@ -343,7 +343,7 @@ class TestJsonpath_rw_ext(testscenarios.WithScenarios,
             self.assertEqual(self.target, result[0].value)
 
 # NOTE(sileht): copy of tests/test_jsonpath.py
-# to ensure we didn't break jsonpath_rw
+# to ensure we didn't break jsonpath_ng
 
 
 class TestJsonPath(base.BaseTestCase):

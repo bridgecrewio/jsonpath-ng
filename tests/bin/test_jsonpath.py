@@ -9,7 +9,7 @@ import sys
 import os
 import json
 
-from jsonpath_rw.bin.jsonpath import main
+from jsonpath_ng.bin.jsonpath import main
 
 class TestJsonPathScript(unittest.TestCase):
     """

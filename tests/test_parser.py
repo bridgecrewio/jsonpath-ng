@@ -1,9 +1,9 @@
 from __future__ import unicode_literals, print_function, absolute_import, division, generators, nested_scopes
 import unittest
 
-from jsonpath_rw.lexer import JsonPathLexer
-from jsonpath_rw.parser import JsonPathParser
-from jsonpath_rw.jsonpath import *
+from jsonpath_ng.lexer import JsonPathLexer
+from jsonpath_ng.parser import JsonPathParser
+from jsonpath_ng.jsonpath import *
 
 class TestParser(unittest.TestCase):
     # TODO: This will be much more effective with a few regression tests and `arbitrary` parse . pretty testing
