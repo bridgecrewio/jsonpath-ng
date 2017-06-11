@@ -11,7 +11,7 @@ setuptools.setup(
     ),
     author='Tomas Aparicio',
     author_email='tomas@aparicio.me',
-    url='https://github.com/tomas-fp/python-jsonpath-ng',
+    url='https://github.com/h2non/jsonpath-ng',
     license='Apache 2.0',
     long_description=io.open('README.rst', encoding='utf-8').read(),
     packages=['jsonpath_ng', 'jsonpath_ng.bin', 'jsonpath_ng.ext'],
