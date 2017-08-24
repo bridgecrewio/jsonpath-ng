@@ -10,9 +10,9 @@ python:
  - "3.6"
 
 install:
- - "pip install ."
- - "pip install pytest"
- - "pip install coverage coveralls"
+ - pip install -r requirements.txt
+ - pip install -r requirements-dev.txt
+ - make test
 
 script: coverage run setup.py test
 
