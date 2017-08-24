@@ -4,7 +4,7 @@ import setuptools
 
 setuptools.setup(
     name='jsonpath-ng',
-    version='1.4.2',
+    version='1.4.3',
     description=(
         'A robust and significantly extended implementation '
         'of JSONPath for Python, with a clear AST for metaprogramming.'
