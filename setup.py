@@ -6,8 +6,9 @@ setuptools.setup(
     name='jsonpath-ng',
     version='1.4.3',
     description=(
-        'A robust and significantly extended implementation '
-        'of JSONPath for Python, with a clear AST for metaprogramming.'
+        'A final implementation of JSONPath for Python that aims to be ' 
+        'standard compliant, including arithmetic and binary comparison '
+        'operators and providing clear AST for metaprogramming.'
     ),
     author='Tomas Aparicio',
     author_email='tomas@aparicio.me',
