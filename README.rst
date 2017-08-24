@@ -1,7 +1,7 @@
-Python JSONPath Next-Generation
-===============================
+Python JSONPath Next-Generation |Build Status| |PyPI| |Coverage Status| |PyPi downloads|
+========================================================================================
 
-A final implementation of JSONPath for Python, including arithmetic
+A final implementation of JSONPath for Python that aims to be standard compliant, including arithmetic
 and binary comparison operators, as defined in the original `JSONPath proposal`_.
 
 This packages merges both `jsonpath-rw`_ and `jsonpath-rw-ext`_ and
@@ -23,11 +23,15 @@ Quick Start
 
 To install, use pip:
 
-::
+.. code:: bash
 
     $ pip install --upgrade jsonpath-ng
 
-Then:
+
+Usage
+-----
+
+Basic examples:
 
 .. code:: python
 
@@ -286,6 +290,7 @@ This package is authored and maintained by:
 
 -  `Kenn Knowles <https://github.com/kennknowles>`__
    (`@kennknowles <https://twitter.com/KennKnowles>`__)
+-  `Tomas Aparicio <https://github.com/h2non>`
 
 with the help of patches submitted by `these contributors <https://github.com/kennknowles/python-jsonpath-ng/graphs/contributors>`__.
 
@@ -293,6 +298,7 @@ Copyright and License
 ---------------------
 
 Copyright 2013 - Kenneth Knowles
+
 Copyright 2017 - Tomas Aparicio
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -313,11 +319,13 @@ limitations under the License.
 .. _`jsonpath-rw`: https://github.com/kennknowles/python-jsonpath-rw
 .. _`jsonpath-rw-ext`: https://pypi.python.org/pypi/jsonpath-rw-ext/
 
-.. |Build Status| image:: https://travis-ci.org/kennknowles/python-jsonpath-ng.png?branch=master
-   :target: https://travis-ci.org/kennknowles/python-jsonpath-ng
-.. |Test coverage| image:: https://coveralls.io/repos/kennknowles/python-jsonpath-ng/badge.png?branch=master
-   :target: https://coveralls.io/r/kennknowles/python-jsonpath-ng
-.. |PyPi version| image:: https://pypip.in/v/jsonpath-ng/badge.png
-   :target: https://pypi.python.org/pypi/jsonpath-ng
 .. |PyPi downloads| image:: https://pypip.in/d/jsonpath-ng/badge.png
    :target: https://pypi.python.org/pypi/jsonpath-ng
+.. |Build Status| image:: https://travis-ci.org/h2non/jsonpath-ng.svg?branch=master
+   :target: https://travis-ci.org/h2non/jsonpath-ng
+.. |PyPI| image:: https://img.shields.io/pypi/v/jsonpath-ng.svg?maxAge=2592000?style=flat-square
+   :target: https://pypi.python.org/pypi/jsonpath-ng
+.. |Coverage Status| image:: https://coveralls.io/repos/github/h2non/jsonpath-ng/badge.svg?branch=master
+   :target: https://coveralls.io/github/h2non/jsonpath-ng?branch=master
+.. |Documentation Status| image:: https://img.shields.io/badge/docs-latest-green.svg?style=flat
+   :target: http://jsonpath-ng.readthedocs.io/en/latest/?badge=latest
