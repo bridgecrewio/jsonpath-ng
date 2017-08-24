@@ -1,0 +1,6 @@
+oslotest
+pytest
+flake8
+testscenarios
+coverage
+coveralls
