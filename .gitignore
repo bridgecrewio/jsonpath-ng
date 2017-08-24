@@ -12,6 +12,7 @@
 /*.egg-info
 parser.out
 .coverage
+.cache
 
 build
 /jsonpath_rw/VERSION
