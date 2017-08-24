@@ -1,5 +1,5 @@
 oslotest
-pytest
+pytest~=3.0.5
 flake8
 testscenarios
 coverage
