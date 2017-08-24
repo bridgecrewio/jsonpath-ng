@@ -20,9 +20,9 @@ install:
 
 lint:
 	@echo "$(OK_COLOR)==> Linting code ...$(NO_COLOR)"
-	@flake8 .
+	@flake8 --exclude=tests .
 
-test: clean lint
+test: clean
 	@echo "$(OK_COLOR)==> Runnings tests ...$(NO_COLOR)"
 	@py.test -s -v --capture sys --cov jsonpath_ng --cov-report term-missing
 

@@ -24,7 +24,7 @@ from oslotest import base
 from six import moves
 import testscenarios
 
-from jsonpath_ng_ext import parser
+from jsonpath_ng.ext import parser
 
 
 class Testjsonpath_ng_ext(testscenarios.WithScenarios,
