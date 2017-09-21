@@ -7,6 +7,12 @@ and binary comparison operators, as defined in the original `JSONPath proposal`_
 This packages merges both `jsonpath-rw`_ and `jsonpath-rw-ext`_ and
 provides several AST API enhancements, such as the ability to update or removes nodes in the tree.
 
+.. raw:: html
+
+    <a target='_blank' rel='nofollow' href='https://app.codesponsor.io/link/1MpD3pzt63uUeG43NP4tDHPY/h2non/jsonpath-ng'>
+      <img alt='Sponsor' width='888' height='68' src='https://app.codesponsor.io/embed/1MpD3pzt63uUeG43NP4tDHPY/h2non/jsonpath-ng.svg' />
+    </a>
+
 About
 -----
 
