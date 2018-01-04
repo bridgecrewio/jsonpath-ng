@@ -37,7 +37,6 @@ class Sub(This):
         self.repl = m.group(2).strip()
         self.regex = re.compile(self.expr)
         self.method = method
-        print("%r" % self)
 
     def find(self, datum):
         datum = DatumInContext.wrap(datum)
