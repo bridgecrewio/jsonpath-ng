@@ -24,7 +24,7 @@ class DefintionInvalid(Exception):
 
 
 class Sub(This):
-    """Regex subtituor
+    """Regex substituor
 
     Concrete syntax is '`sub(/regex/, repl)`'
     """
@@ -80,7 +80,7 @@ class Split(This):
         return [DatumInContext.wrap(value)]
 
     def __eq__(self, other):
-        return (isinstance(other, Sub) and self.method == other.method)
+        return (isinstance(other, Split) and self.method == other.method)
 
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, self.method)
