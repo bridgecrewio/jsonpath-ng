@@ -18,3 +18,4 @@ build
 /jsonpath_rw/VERSION
 
 .idea
+.vscode/
