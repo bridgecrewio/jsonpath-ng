@@ -25,6 +25,7 @@ OPERATOR_MAP = {
     '<': operator.lt,
     '>=': operator.ge,
     '>': operator.gt,
+    '=~': operator.contains,
 }
 
 
