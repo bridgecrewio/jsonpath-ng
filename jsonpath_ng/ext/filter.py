@@ -48,6 +48,17 @@ class Filter(JSONPath):
                     len(list(filter(lambda x: x.find(datum.value[i]),
                                     self.expressions))))]
 
+    def update(self, data, val):
+        if type(data) is list:
+            for index, item in enumerate(data):
+                shouldUpdate = len(self.expressions) == len(list(filter(lambda x: x.find(item), self.expressions)))
+                if shouldUpdate:
+                    if hasattr(val, '__call__'):
+                        val.__call__(data[index], data, index)
+                    else:
+                        data[index] = val
+        return data
+    
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, self.expressions)
 
