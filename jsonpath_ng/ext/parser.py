@@ -100,6 +100,8 @@ class ExtentedJsonPathParser(parser.JsonPathParser):
             p[0] = _string.Split(p[1])
         elif p[1].startswith("sub("):
             p[0] = _string.Sub(p[1])
+        elif p[1].startswith("str("):
+            p[0] = _string.Str(p[1])
         else:
             super(ExtentedJsonPathParser, self).p_jsonpath_named_operator(p)
 

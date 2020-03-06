@@ -276,7 +276,11 @@ class Testjsonpath_ng_ext(testscenarios.WithScenarios,
             data={'payload': "foo+bar"},
             target=["repl"]
         )),
-
+        ('str1', dict(
+            string='payload.`str()`',
+            data={'payload': 1},
+            target=["1"]
+        )),
         ('split1', dict(
             string='payload.`split(-, 2, -1)`',
             data={'payload': "foo-bar-cat-bow"},
