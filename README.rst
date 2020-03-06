@@ -1,5 +1,5 @@
-Python JSONPath Next-Generation |Build Status| |PyPI| |Coverage Status|
-=======================================================================
+Python JSONPath Next-Generation |Build Status| |PyPI|
+=====================================================
 
 A final implementation of JSONPath for Python that aims to be standard compliant, including arithmetic
 and binary comparison operators, as defined in the original `JSONPath proposal`_.
@@ -326,7 +326,5 @@ limitations under the License.
    :target: https://travis-ci.org/h2non/jsonpath-ng
 .. |PyPI| image:: https://img.shields.io/pypi/v/jsonpath-ng.svg?maxAge=2592000?style=flat-square
    :target: https://pypi.python.org/pypi/jsonpath-ng
-.. |Coverage Status| image:: https://coveralls.io/repos/github/h2non/jsonpath-ng/badge.svg?branch=master
-   :target: https://coveralls.io/github/h2non/jsonpath-ng?branch=master
 .. |Documentation Status| image:: https://img.shields.io/badge/docs-latest-green.svg?style=flat
    :target: http://jsonpath-ng.readthedocs.io/en/latest/?badge=latest
