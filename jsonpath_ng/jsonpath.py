@@ -617,6 +617,9 @@ class Slice(JSONPath):
     def find(self, datum):
         datum = DatumInContext.wrap(datum)
 
+        # Used for catching null value instead of empty list in path
+        if not datum.value:
+            return []
         # Here's the hack. If it is a dictionary or some kind of constant,
         # put it in a single-element list
         if (isinstance(datum.value, dict) or isinstance(datum.value, six.integer_types) or isinstance(datum.value, six.string_types)):
