@@ -12,6 +12,7 @@
 # under the License.
 
 import operator
+import re
 from six import moves
 
 from .. import JSONPath, DatumInContext, Index
@@ -25,7 +26,7 @@ OPERATOR_MAP = {
     '<': operator.lt,
     '>=': operator.ge,
     '>': operator.gt,
-    '=~': operator.contains,
+    '=~': lambda a, b: True if re.search(b, a) else False,
 }
 
 
