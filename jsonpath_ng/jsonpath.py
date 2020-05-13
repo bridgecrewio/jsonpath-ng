@@ -521,19 +521,21 @@ class Fields(JSONPath):
                  if field_datum is not None]
 
     def update(self, data, val):
-        for field in self.reified_fields(DatumInContext.wrap(data)):
-            if field in data:
-                if hasattr(val, '__call__'):
-                    val(data[field], data, field)
-                else:
-                    data[field] = val
+        if data is not None:
+            for field in self.reified_fields(DatumInContext.wrap(data)):
+                if field in data:
+                    if hasattr(val, '__call__'):
+                        val(data[field], data, field)
+                    else:
+                        data[field] = val
         return data
 
     def filter(self, fn, data):
-        for field in self.reified_fields(DatumInContext.wrap(data)):
-            if field in data:
-                if fn(data[field]):
-                    data.pop(field)
+        if data is not None:
+            for field in self.reified_fields(DatumInContext.wrap(data)):
+                if field in data:
+                    if fn(data[field]):
+                        data.pop(field)
         return data
 
     def __str__(self):
