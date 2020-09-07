@@ -1,4 +1,14 @@
 
+v1.5.2 / 2020-09-07
+===================
+
+  * Merge pull request #41 from josephwhite13/allow-dictionary-filtering
+  * Merge pull request #48 from back2root/master
+  * Check for null value.
+  * Merge pull request #40 from memborsky/add-regular-expression-contains-support
+  * feat: support regular expression for performing contains (=~) filtering
+  * if datum.value is a dictionary, filter on the list of values
+
 1.5.1 / 2020-03-09
 ==================
 
