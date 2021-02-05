@@ -4,11 +4,9 @@ import logging
 
 import ply.lex
 
+from jsonpath_ng.exceptions import JsonPathLexerError
+
 logger = logging.getLogger(__name__)
-
-
-class JsonPathLexerError(Exception):
-    pass
 
 
 class JsonPathLexer(object):
