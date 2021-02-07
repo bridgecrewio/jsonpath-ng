@@ -439,6 +439,10 @@ class Descendants(JSONPath):
     def __eq__(self, other):
         return isinstance(other, Descendants) and self.left == other.left and self.right == other.right
 
+    def __repr__(self):
+        return '%s(%r, %r)' % (self.__class__.__name__, self.left, self.right)
+
+
 class Union(JSONPath):
     """
     JSONPath that returns the union of the results of each match.
