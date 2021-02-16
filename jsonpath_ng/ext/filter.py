@@ -71,6 +71,10 @@ class Filter(JSONPath):
     def __str__(self):
         return '[?%s]' % self.expressions
 
+    def __eq__(self, other):
+        return (isinstance(other, Filter)
+                and self.expressions == other.expressions)
+
 
 class Expression(JSONPath):
     """The JSONQuery expression"""
@@ -108,7 +112,7 @@ class Expression(JSONPath):
         return found
 
     def __eq__(self, other):
-        return (isinstance(other, Filter) and
+        return (isinstance(other, Expression) and
                 self.target == other.target and
                 self.op == other.op and
                 self.value == other.value)
