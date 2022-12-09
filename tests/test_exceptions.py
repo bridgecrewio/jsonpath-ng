@@ -1,8 +1,8 @@
 import pytest
 
-from jsonpath_ng import parse as rw_parse
-from jsonpath_ng.exceptions import JSONPathError, JsonPathParserError
-from jsonpath_ng.ext import parse as ext_parse
+from bc_jsonpath_ng import parse as rw_parse
+from bc_jsonpath_ng.exceptions import JSONPathError, JsonPathParserError
+from bc_jsonpath_ng.ext import parse as ext_parse
 
 
 def test_rw_exception_class():

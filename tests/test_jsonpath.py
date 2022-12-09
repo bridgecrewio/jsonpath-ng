@@ -1,11 +1,11 @@
 from __future__ import unicode_literals, print_function, absolute_import, division, generators, nested_scopes
 import unittest
 
-from jsonpath_ng import jsonpath # For setting the global auto_id_field flag
+from bc_jsonpath_ng import jsonpath # For setting the global auto_id_field flag
 
-from jsonpath_ng.parser import parse
-from jsonpath_ng.jsonpath import *
-from jsonpath_ng.lexer import JsonPathLexerError
+from bc_jsonpath_ng.parser import parse
+from bc_jsonpath_ng.jsonpath import *
+from bc_jsonpath_ng.lexer import JsonPathLexerError
 
 class TestDatumInContext(unittest.TestCase):
     """
@@ -136,7 +136,7 @@ class TestJsonPath(unittest.TestCase):
 
     def test_slice_value(self):
         self.check_cases([('[*]', [1, 2, 3], [1, 2, 3]),
-                          ('[*]', xrange(1, 4), [1, 2, 3]),
+                          ('[*]', range(1, 4), [1, 2, 3]),
                           ('[1:]', [1, 2, 3, 4], [2, 3, 4]),
                           ('[:2]', [1, 2, 3, 4], [1, 2])])
 

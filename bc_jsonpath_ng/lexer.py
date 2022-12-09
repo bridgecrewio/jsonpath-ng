@@ -4,7 +4,7 @@ import logging
 
 import ply.lex
 
-from jsonpath_ng.exceptions import JsonPathLexerError
+from bc_jsonpath_ng.exceptions import JsonPathLexerError
 
 logger = logging.getLogger(__name__)
 

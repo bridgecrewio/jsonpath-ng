@@ -13,345 +13,530 @@
 # under the License.
 
 """
-test_jsonpath_ng_ext
+test_bc_jsonpath_ng_ext
 ----------------------------------
 
-Tests for `jsonpath_ng_ext` module.
+Tests for `bc_jsonpath_ng_ext` module.
 """
+import pytest
 
-from jsonpath_ng import jsonpath  # For setting the global auto_id_field flag
+from bc_jsonpath_ng import jsonpath  # For setting the global auto_id_field flag
 from oslotest import base
-from six import moves
 import testscenarios
 
-from jsonpath_ng.ext import parser
+from bc_jsonpath_ng.ext import parser
 
 
-class Testjsonpath_ng_ext(testscenarios.WithScenarios,
-                          base.BaseTestCase):
-    scenarios = [
-        ('sorted_list', dict(string='objects.`sorted`',
-                             data={'objects': ['alpha', 'gamma', 'beta']},
-                             target=[['alpha', 'beta', 'gamma']])),
-        ('sorted_list_indexed', dict(string='objects.`sorted`[1]',
-                                     data={'objects': [
-                                         'alpha', 'gamma', 'beta']},
-                                     target='beta')),
-        ('sorted_dict', dict(string='objects.`sorted`',
-                             data={'objects': {'cow': 'moo', 'horse': 'neigh',
-                                               'cat': 'meow'}},
-                             target=[['cat', 'cow', 'horse']])),
-        ('sorted_dict_indexed', dict(string='objects.`sorted`[0]',
-                                     data={'objects': {'cow': 'moo',
-                                                       'horse': 'neigh',
-                                                       'cat': 'meow'}},
-                                     target='cat')),
-
-        ('len_list', dict(string='objects.`len`',
-                          data={'objects': ['alpha', 'gamma', 'beta']},
-                          target=3)),
-        ('len_dict', dict(string='objects.`len`',
-                          data={'objects': {'cow': 'moo', 'cat': 'neigh'}},
-                          target=2)),
-        ('len_str', dict(string='objects[0].`len`',
-                         data={'objects': ['alpha', 'gamma']},
-                         target=5)),
-
-        ('filter_exists_syntax1', dict(string='objects[?cow]',
-                                       data={'objects': [{'cow': 'moo'},
-                                                         {'cat': 'neigh'}]},
-                                       target=[{'cow': 'moo'}])),
-        ('filter_exists_syntax2', dict(string='objects[?@.cow]',
-                                       data={'objects': [{'cow': 'moo'},
-                                                         {'cat': 'neigh'}]},
-                                       target=[{'cow': 'moo'}])),
-        ('filter_exists_syntax3', dict(string='objects[?(@.cow)]',
-                                       data={'objects': [{'cow': 'moo'},
-                                                         {'cat': 'neigh'}]},
-                                       target=[{'cow': 'moo'}])),
-        ('filter_exists_syntax4', dict(string='objects[?(@."cow!?cat")]',
-                                       data={'objects': [{'cow!?cat': 'moo'},
-                                                         {'cat': 'neigh'}]},
-                                       target=[{'cow!?cat': 'moo'}])),
-        ('filter_eq1', dict(string='objects[?cow="moo"]',
-                            data={'objects': [{'cow': 'moo'},
-                                              {'cow': 'neigh'},
-                                              {'cat': 'neigh'}]},
-                            target=[{'cow': 'moo'}])),
-        ('filter_eq2', dict(string='objects[?(@.["cow"]="moo")]',
-                            data={'objects': [{'cow': 'moo'},
-                                              {'cow': 'neigh'},
-                                              {'cat': 'neigh'}]},
-                            target=[{'cow': 'moo'}])),
-        ('filter_eq3', dict(string='objects[?cow=="moo"]',
-                            data={'objects': [{'cow': 'moo'},
-                                              {'cow': 'neigh'},
-                                              {'cat': 'neigh'}]},
-                            target=[{'cow': 'moo'}])),
-        ('filter_gt', dict(string='objects[?cow>5]',
-                           data={'objects': [{'cow': 8},
-                                             {'cow': 7},
-                                             {'cow': 5},
-                                             {'cow': 'neigh'}]},
-                           target=[{'cow': 8}, {'cow': 7}])),
-        ('filter_and', dict(string='objects[?cow>5&cat=2]',
-                            data={'objects': [{'cow': 8, 'cat': 2},
-                                              {'cow': 7, 'cat': 2},
-                                              {'cow': 2, 'cat': 2},
-                                              {'cow': 5, 'cat': 3},
-                                              {'cow': 8, 'cat': 3}]},
-                            target=[{'cow': 8, 'cat': 2},
-                                    {'cow': 7, 'cat': 2}])),
-        ('filter_float_gt', dict(
-            string='objects[?confidence>=0.5].prediction',
-            data={
-                'objects': [
-                    {'confidence': 0.42,
-                     'prediction': 'Good'},
-                    {'confidence': 0.58,
-                     'prediction': 'Bad'},
+@pytest.mark.parametrize(
+    "query,data,expected",
+    [
+        (
+            "objects.`sorted`",
+            {"objects": ["alpha", "gamma", "beta"]},
+            [["alpha", "beta", "gamma"]],
+        ),
+        (
+            "objects.`sorted`[1]",
+            {"objects": ["alpha", "gamma", "beta"]},
+            "beta",
+        ),
+        (
+            "objects.`sorted`",
+            {"objects": {"cow": "moo", "horse": "neigh", "cat": "meow"}},
+            [["cat", "cow", "horse"]],
+        ),
+        (
+            "objects.`sorted`[0]",
+            {"objects": {"cow": "moo", "horse": "neigh", "cat": "meow"}},
+            "cat",
+        ),
+        (
+            "objects.`len`",
+            {"objects": ["alpha", "gamma", "beta"]},
+            3,
+        ),
+        (
+            "objects.`len`",
+            {"objects": {"cow": "moo", "cat": "neigh"}},
+            2,
+        ),
+        (
+            "objects[0].`len`",
+            {"objects": ["alpha", "gamma"]},
+            5,
+        ),
+        (
+            "objects[?cow]",
+            {"objects": [{"cow": "moo"}, {"cat": "neigh"}]},
+            [{"cow": "moo"}],
+        ),
+        (
+            "objects[?@.cow]",
+            {"objects": [{"cow": "moo"}, {"cat": "neigh"}]},
+            [{"cow": "moo"}],
+        ),
+        (
+            "objects[?(@.cow)]",
+            {"objects": [{"cow": "moo"}, {"cat": "neigh"}]},
+            [{"cow": "moo"}],
+        ),
+        (
+            'objects[?(@."cow!?cat")]',
+            {"objects": [{"cow!?cat": "moo"}, {"cat": "neigh"}]},
+            [{"cow!?cat": "moo"}],
+        ),
+        (
+            'objects[?cow="moo"]',
+            {"objects": [{"cow": "moo"}, {"cow": "neigh"}, {"cat": "neigh"}]},
+            [{"cow": "moo"}],
+        ),
+        (
+            'objects[?(@.["cow"]="moo")]',
+            {"objects": [{"cow": "moo"}, {"cow": "neigh"}, {"cat": "neigh"}]},
+            [{"cow": "moo"}],
+        ),
+        (
+            'objects[?cow=="moo"]',
+            {"objects": [{"cow": "moo"}, {"cow": "neigh"}, {"cat": "neigh"}]},
+            [{"cow": "moo"}],
+        ),
+        (
+            "objects[?cow>5]",
+            {"objects": [{"cow": 8}, {"cow": 7}, {"cow": 5}, {"cow": "neigh"}]},
+            [{"cow": 8}, {"cow": 7}],
+        ),
+        (
+            "objects[?cow>5&cat=2]",
+            {
+                "objects": [
+                    {"cow": 8, "cat": 2},
+                    {"cow": 7, "cat": 2},
+                    {"cow": 2, "cat": 2},
+                    {"cow": 5, "cat": 3},
+                    {"cow": 8, "cat": 3},
                 ]
             },
-            target=['Bad']
-        )),
-        ('sort1', dict(string='objects[/cow]',
-                       data={'objects': [{'cat': 1, 'cow': 2},
-                                         {'cat': 2, 'cow': 1},
-                                         {'cat': 3, 'cow': 3}]},
-                       target=[[{'cat': 2, 'cow': 1},
-                               {'cat': 1, 'cow': 2},
-                               {'cat': 3, 'cow': 3}]])),
-        ('sort1_indexed', dict(string='objects[/cow][0].cat',
-                               data={'objects': [{'cat': 1, 'cow': 2},
-                                                 {'cat': 2, 'cow': 1},
-                                                 {'cat': 3, 'cow': 3}]},
-                               target=2)),
-        ('sort2', dict(string='objects[\cat]',
-                       data={'objects': [{'cat': 2}, {'cat': 1}, {'cat': 3}]},
-                       target=[[{'cat': 3}, {'cat': 2}, {'cat': 1}]])),
-        ('sort2_indexed', dict(string='objects[\cat][-1].cat',
-                               data={'objects': [{'cat': 2}, {'cat': 1},
-                                                 {'cat': 3}]},
-                               target=1)),
-        ('sort3', dict(string='objects[/cow,\cat]',
-                       data={'objects': [{'cat': 1, 'cow': 2},
-                                         {'cat': 2, 'cow': 1},
-                                         {'cat': 3, 'cow': 1},
-                                         {'cat': 3, 'cow': 3}]},
-                       target=[[{'cat': 3, 'cow': 1},
-                               {'cat': 2, 'cow': 1},
-                               {'cat': 1, 'cow': 2},
-                               {'cat': 3, 'cow': 3}]])),
-        ('sort3_indexed', dict(string='objects[/cow,\cat][0].cat',
-                               data={'objects': [{'cat': 1, 'cow': 2},
-                                                 {'cat': 2, 'cow': 1},
-                                                 {'cat': 3, 'cow': 1},
-                                                 {'cat': 3, 'cow': 3}]},
-                               target=3)),
-        ('sort4', dict(string='objects[/cat.cow]',
-                       data={'objects': [{'cat': {'dog': 1, 'cow': 2}},
-                                         {'cat': {'dog': 2, 'cow': 1}},
-                                         {'cat': {'dog': 3, 'cow': 3}}]},
-                       target=[[{'cat': {'dog': 2, 'cow': 1}},
-                               {'cat': {'dog': 1, 'cow': 2}},
-                               {'cat': {'dog': 3, 'cow': 3}}]])),
-        ('sort4_indexed', dict(string='objects[/cat.cow][0].cat.dog',
-                               data={'objects': [{'cat': {'dog': 1,
-                                                          'cow': 2}},
-                                                 {'cat': {'dog': 2,
-                                                          'cow': 1}},
-                                                 {'cat': {'dog': 3,
-                                                          'cow': 3}}]},
-                               target=2)),
-        ('sort5_twofields', dict(string='objects[/cat.(cow,bow)]',
-                                 data={'objects':
-                                       [{'cat': {'dog': 1, 'bow': 3}},
-                                        {'cat': {'dog': 2, 'cow': 1}},
-                                        {'cat': {'dog': 2, 'bow': 2}},
-                                        {'cat': {'dog': 3, 'cow': 2}}]},
-                                 target=[[{'cat': {'dog': 2, 'cow': 1}},
-                                         {'cat': {'dog': 2, 'bow': 2}},
-                                         {'cat': {'dog': 3, 'cow': 2}},
-                                         {'cat': {'dog': 1, 'bow': 3}}]])),
+            [{"cow": 8, "cat": 2}, {"cow": 7, "cat": 2}],
+        ),
+        (
+            "objects[?confidence>=0.5].prediction",
+            {
+                "objects": [
+                    {"confidence": 0.42, "prediction": "Good"},
+                    {"confidence": 0.58, "prediction": "Bad"},
+                ]
+            },
+            ["Bad"],
+        ),
+        (
+            "objects[/cow]",
+            {
+                "objects": [
+                    {"cat": 1, "cow": 2},
+                    {"cat": 2, "cow": 1},
+                    {"cat": 3, "cow": 3},
+                ]
+            },
+            [[{"cat": 2, "cow": 1}, {"cat": 1, "cow": 2}, {"cat": 3, "cow": 3}]],
+        ),
+        (
+            "objects[/cow][0].cat",
+            {
+                "objects": [
+                    {"cat": 1, "cow": 2},
+                    {"cat": 2, "cow": 1},
+                    {"cat": 3, "cow": 3},
+                ]
+            },
+            2,
+        ),
+        (
+            "objects[\cat]",
+            {"objects": [{"cat": 2}, {"cat": 1}, {"cat": 3}]},
+            [[{"cat": 3}, {"cat": 2}, {"cat": 1}]],
+        ),
+        (
+            "objects[\cat][-1].cat",
+            {"objects": [{"cat": 2}, {"cat": 1}, {"cat": 3}]},
+            1,
+        ),
+        (
+            "objects[/cow,\cat]",
+            {
+                "objects": [
+                    {"cat": 1, "cow": 2},
+                    {"cat": 2, "cow": 1},
+                    {"cat": 3, "cow": 1},
+                    {"cat": 3, "cow": 3},
+                ]
+            },
+            [
+                [
+                    {"cat": 3, "cow": 1},
+                    {"cat": 2, "cow": 1},
+                    {"cat": 1, "cow": 2},
+                    {"cat": 3, "cow": 3},
+                ]
+            ],
+        ),
+        (
+            "objects[/cow,\cat][0].cat",
+            {
+                "objects": [
+                    {"cat": 1, "cow": 2},
+                    {"cat": 2, "cow": 1},
+                    {"cat": 3, "cow": 1},
+                    {"cat": 3, "cow": 3},
+                ]
+            },
+            3,
+        ),
+        (
+            "objects[/cat.cow]",
+            {
+                "objects": [
+                    {"cat": {"dog": 1, "cow": 2}},
+                    {"cat": {"dog": 2, "cow": 1}},
+                    {"cat": {"dog": 3, "cow": 3}},
+                ]
+            },
+            [
+                [
+                    {"cat": {"dog": 2, "cow": 1}},
+                    {"cat": {"dog": 1, "cow": 2}},
+                    {"cat": {"dog": 3, "cow": 3}},
+                ]
+            ],
+        ),
+        (
+            "objects[/cat.cow][0].cat.dog",
+            {
+                "objects": [
+                    {"cat": {"dog": 1, "cow": 2}},
+                    {"cat": {"dog": 2, "cow": 1}},
+                    {"cat": {"dog": 3, "cow": 3}},
+                ]
+            },
+            2,
+        ),
+        (
+            "objects[/cat.(cow,bow)]",
+            {
+                "objects": [
+                    {"cat": {"dog": 1, "bow": 3}},
+                    {"cat": {"dog": 2, "cow": 1}},
+                    {"cat": {"dog": 2, "bow": 2}},
+                    {"cat": {"dog": 3, "cow": 2}},
+                ]
+            },
+            [
+                [
+                    {"cat": {"dog": 2, "cow": 1}},
+                    {"cat": {"dog": 2, "bow": 2}},
+                    {"cat": {"dog": 3, "cow": 2}},
+                    {"cat": {"dog": 1, "bow": 3}},
+                ]
+            ],
+        ),
+        (
+            "objects[/cat.(cow,bow)][0].cat.dog",
+            {
+                "objects": [
+                    {"cat": {"dog": 1, "bow": 3}},
+                    {"cat": {"dog": 2, "cow": 1}},
+                    {"cat": {"dog": 2, "bow": 2}},
+                    {"cat": {"dog": 3, "cow": 2}},
+                ]
+            },
+            2,
+        ),
+        (
+            "3 * 3",
+            {},
+            [9],
+        ),
+        (
+            "$.foo * 10",
+            {"foo": 4},
+            [40],
+        ),
+        (
+            "10 * $.foo",
+            {"foo": 4},
+            [40],
+        ),
+        (
+            "$.foo * 10",
+            {"foo": 4},
+            [40],
+        ),
+        (
+            "$.foo * 3",
+            {"foo": "f"},
+            ["fff"],
+        ),
+        (
+            "foo * 3",
+            {"foo": "f"},
+            ["foofoofoo"],
+        ),
+        (
+            "($.foo * 10 * $.foo) + 2",
+            {"foo": 4},
+            [162],
+        ),
+        (
+            "$.foo * 10 * $.foo + 2",
+            {"foo": 4},
+            [240],
+        ),
+        (
+            "foo + bar",
+            {"foo": "name", "bar": "node"},
+            ["foobar"],
+        ),
+        (
+            'foo + "_" + bar',
+            {"foo": "name", "bar": "node"},
+            ["foo_bar"],
+        ),
+        (
+            '$.foo + "_" + $.bar',
+            {"foo": "name", "bar": "node"},
+            ["name_node"],
+        ),
+        (
+            "$.foo + $.bar",
+            {"foo": "name", "bar": "node"},
+            ["namenode"],
+        ),
+        (
+            "foo.cow + bar.cow",
+            {"foo": {"cow": "name"}, "bar": {"cow": "node"}},
+            ["namenode"],
+        ),
+        (
+            "$.objects[*].cow * 2",
+            {"objects": [{"cow": 1}, {"cow": 2}, {"cow": 3}]},
+            [2, 4, 6],
+        ),
+        (
+            "$.objects[*].cow * $.objects[*].cow",
+            {"objects": [{"cow": 1}, {"cow": 2}, {"cow": 3}]},
+            [1, 4, 9],
+        ),
+        (
+            "$.objects[*].cow * $.objects2[*].cow",
+            {
+                "objects": [{"cow": 1}, {"cow": 2}, {"cow": 3}],
+                "objects2": [{"cow": 5}],
+            },
+            [],
+        ),
+        (
+            '$.objects * "foo"',
+            {"objects": []},
+            [],
+        ),
+        (
+            '"bar" * "foo"',
+            {},
+            [],
+        ),
+        (
+            "payload.metrics[?(@.name='cpu.frequency')].value * 100",
+            {
+                "payload": {
+                    "metrics": [
+                        {
+                            "timestamp": "2013-07-29T06:51:34.472416",
+                            "name": "cpu.frequency",
+                            "value": 1600,
+                            "source": "libvirt.LibvirtDriver",
+                        },
+                        {
+                            "timestamp": "2013-07-29T06:51:34.472416",
+                            "name": "cpu.user.time",
+                            "value": 17421440000000,
+                            "source": "libvirt.LibvirtDriver",
+                        },
+                    ]
+                }
+            },
+            [160000],
+        ),
+        (
+            "payload.(id|(resource.id))",
+            {"payload": {"id": "foobar"}},
+            ["foobar"],
+        ),
+        (
+            "payload.id|(resource.id)",
+            {"payload": {"resource": {"id": "foobar"}}},
+            ["foobar"],
+        ),
+        (
+            "payload.id|(resource.id)",
+            {"payload": {"id": "yes", "resource": {"id": "foobar"}}},
+            ["yes", "foobar"],
+        ),
+        (
+            "payload.`sub(/(foo\\\\d+)\\\\+(\\\\d+bar)/, \\\\2-\\\\1)`",
+            {"payload": "foo5+3bar"},
+            ["3bar-foo5"],
+        ),
+        (
+            "payload.`sub(/foo\\\\+bar/, repl)`",
+            {"payload": "foo+bar"},
+            ["repl"],
+        ),
+        (
+            "payload.`str()`",
+            {"payload": 1},
+            ["1"],
+        ),
+        (
+            "payload.`split(-, 2, -1)`",
+            {"payload": "foo-bar-cat-bow"},
+            ["cat"],
+        ),
+        (
+            "payload.`split(-, 2, 2)`",
+            {"payload": "foo-bar-cat-bow"},
+            ["cat-bow"],
+        ),
+        (
+            "foo[?(@.baz==1)]",
+            {"foo": [{"baz": 1}, {"baz": 2}]},
+            [{"baz": 1}],
+        ),
+        (
+            "foo[*][?(@.baz==1)]",
+            {"foo": [{"baz": 1}, {"baz": 2}]},
+            [],
+        ),
+        (
+            "foo[?flag = true].color",
+            {
+                "foo": [
+                    {"color": "blue", "flag": True},
+                    {"color": "green", "flag": False},
+                ]
+            },
+            ["blue"],
+        ),
+        (
+            "foo[?flag = false].color",
+            {
+                "foo": [
+                    {"color": "blue", "flag": True},
+                    {"color": "green", "flag": False},
+                ]
+            },
+            ["green"],
+        ),
+        (
+            "foo[?flag = true].color",
+            {
+                "foo": [
+                    {"color": "blue", "flag": True},
+                    {"color": "green", "flag": 2},
+                    {"color": "red", "flag": "hi"},
+                ]
+            },
+            ["blue"],
+        ),
+        (
+            'foo[?flag = "true"].color',
+            {
+                "foo": [
+                    {"color": "blue", "flag": True},
+                    {"color": "green", "flag": "true"},
+                ]
+            },
+            ["green"],
+        ),
+    ],
+    ids=[
+        "sorted_list",
+        "sorted_list_indexed",
+        "sorted_dict",
+        "sorted_dict_indexed",
+        "len_list",
+        "len_dict",
+        "len_str",
+        "filter_exists_syntax1",
+        "filter_exists_syntax2",
+        "filter_exists_syntax3",
+        "filter_exists_syntax4",
+        "filter_eq1",
+        "filter_eq2",
+        "filter_eq3",
+        "filter_gt",
+        "filter_and",
+        "filter_float_gt",
+        "sort1",
+        "sort1_indexed",
+        "sort2",
+        "sort2_indexed",
+        "sort3",
+        "sort3_indexed",
+        "sort4",
+        "sort4_indexed",
+        "sort5_twofields",
+        "sort5_indexed",
+        "arithmetic_number_only",
+        "arithmetic_mul1",
+        "arithmetic_mul2",
+        "arithmetic_mul3",
+        "arithmetic_mul4",
+        "arithmetic_mul5",
+        "arithmetic_mul6",
+        "arithmetic_mul7",
+        "arithmetic_str0",
+        "arithmetic_str1",
+        "arithmetic_str2",
+        "arithmetic_str3",
+        "arithmetic_str4",
+        "arithmetic_list1",
+        "arithmetic_list2",
+        "arithmetic_list_err1",
+        "arithmetic_err1",
+        "arithmetic_err2",
+        "real_life_example1",
+        "real_life_example2",
+        "real_life_example3",
+        "real_life_example4",
+        "sub1",
+        "sub2",
+        "str1",
+        "split1",
+        "split2",
+        "bug-#2-correct",
+        "bug-#2-wrong",
+        "boolean-filter-true",
+        "boolean-filter-false",
+        "boolean-filter-other-datatypes-involved",
+        "boolean-filter-string-true-string-literal",
+    ],
+)
+def test_jsonpath_ext(query, data, expected):
+    jsonpath.auto_id_field = None
+    result = parser.parse(query, debug=True).find(data)
+    if isinstance(expected, list):
+        assert [r.value for r in result] == expected
+    elif isinstance(expected, set):
+        assert {r.value for r in result} == expected
+    else:
+        assert result[0].value == expected
 
-        ('sort5_indexed', dict(string='objects[/cat.(cow,bow)][0].cat.dog',
-                               data={'objects':
-                                     [{'cat': {'dog': 1, 'bow': 3}},
-                                      {'cat': {'dog': 2, 'cow': 1}},
-                                      {'cat': {'dog': 2, 'bow': 2}},
-                                      {'cat': {'dog': 3, 'cow': 2}}]},
-                               target=2)),
-        ('arithmetic_number_only', dict(string='3 * 3', data={},
-                                        target=[9])),
-
-        ('arithmetic_mul1', dict(string='$.foo * 10', data={'foo': 4},
-                                 target=[40])),
-        ('arithmetic_mul2', dict(string='10 * $.foo', data={'foo': 4},
-                                 target=[40])),
-        ('arithmetic_mul3', dict(string='$.foo * 10', data={'foo': 4},
-                                 target=[40])),
-        ('arithmetic_mul4', dict(string='$.foo * 3', data={'foo': 'f'},
-                                 target=['fff'])),
-        ('arithmetic_mul5', dict(string='foo * 3', data={'foo': 'f'},
-                                 target=['foofoofoo'])),
-        ('arithmetic_mul6', dict(string='($.foo * 10 * $.foo) + 2',
-                                 data={'foo': 4}, target=[162])),
-        ('arithmetic_mul7', dict(string='$.foo * 10 * $.foo + 2',
-                                 data={'foo': 4}, target=[240])),
-
-        ('arithmetic_str0', dict(string='foo + bar',
-                                 data={'foo': 'name', "bar": "node"},
-                                 target=["foobar"])),
-        ('arithmetic_str1', dict(string='foo + "_" + bar',
-                                 data={'foo': 'name', "bar": "node"},
-                                 target=["foo_bar"])),
-        ('arithmetic_str2', dict(string='$.foo + "_" + $.bar',
-                                 data={'foo': 'name', "bar": "node"},
-                                 target=["name_node"])),
-        ('arithmetic_str3', dict(string='$.foo + $.bar',
-                                 data={'foo': 'name', "bar": "node"},
-                                 target=["namenode"])),
-        ('arithmetic_str4', dict(string='foo.cow + bar.cow',
-                                 data={'foo': {'cow': 'name'},
-                                       "bar": {'cow': "node"}},
-                                 target=["namenode"])),
-
-        ('arithmetic_list1', dict(string='$.objects[*].cow * 2',
-                                  data={'objects': [{'cow': 1},
-                                                    {'cow': 2},
-                                                    {'cow': 3}]},
-                                  target=[2, 4, 6])),
-
-        ('arithmetic_list2', dict(string='$.objects[*].cow * $.objects[*].cow',
-                                  data={'objects': [{'cow': 1},
-                                                    {'cow': 2},
-                                                    {'cow': 3}]},
-                                  target=[1, 4, 9])),
-
-        ('arithmetic_list_err1', dict(
-            string='$.objects[*].cow * $.objects2[*].cow',
-            data={'objects': [{'cow': 1}, {'cow': 2}, {'cow': 3}],
-                  'objects2': [{'cow': 5}]},
-            target=[])),
-
-        ('arithmetic_err1', dict(string='$.objects * "foo"',
-                                 data={'objects': []}, target=[])),
-        ('arithmetic_err2', dict(string='"bar" * "foo"', data={}, target=[])),
-
-        ('real_life_example1', dict(
-            string="payload.metrics[?(@.name='cpu.frequency')].value * 100",
-            data={'payload': {'metrics': [
-                {'timestamp': '2013-07-29T06:51:34.472416',
-                 'name': 'cpu.frequency',
-                 'value': 1600,
-                 'source': 'libvirt.LibvirtDriver'},
-                {'timestamp': '2013-07-29T06:51:34.472416',
-                 'name': 'cpu.user.time',
-                 'value': 17421440000000,
-                 'source': 'libvirt.LibvirtDriver'}]}},
-            target=[160000])),
-
-        ('real_life_example2', dict(
-            string="payload.(id|(resource.id))",
-            data={'payload': {'id': 'foobar'}},
-            target=['foobar'])),
-        ('real_life_example3', dict(
-            string="payload.id|(resource.id)",
-            data={'payload': {'resource':
-                              {'id': 'foobar'}}},
-            target=['foobar'])),
-        ('real_life_example4', dict(
-            string="payload.id|(resource.id)",
-            data={'payload': {'id': 'yes',
-                              'resource': {'id': 'foobar'}}},
-            target=['yes', 'foobar'])),
-
-        ('sub1', dict(
-            string="payload.`sub(/(foo\\\\d+)\\\\+(\\\\d+bar)/, \\\\2-\\\\1)`",
-            data={'payload': "foo5+3bar"},
-            target=["3bar-foo5"]
-        )),
-        ('sub2', dict(
-            string='payload.`sub(/foo\\\\+bar/, repl)`',
-            data={'payload': "foo+bar"},
-            target=["repl"]
-        )),
-        ('str1', dict(
-            string='payload.`str()`',
-            data={'payload': 1},
-            target=["1"]
-        )),
-        ('split1', dict(
-            string='payload.`split(-, 2, -1)`',
-            data={'payload': "foo-bar-cat-bow"},
-            target=["cat"]
-        )),
-        ('split2', dict(
-            string='payload.`split(-, 2, 2)`',
-            data={'payload': "foo-bar-cat-bow"},
-            target=["cat-bow"]
-        )),
-
-        ('bug-#2-correct', dict(
-            string='foo[?(@.baz==1)]',
-            data={'foo': [{'baz': 1}, {'baz': 2}]},
-            target=[{'baz': 1}],
-        )),
-
-        ('bug-#2-wrong', dict(
-            string='foo[*][?(@.baz==1)]',
-            data={'foo': [{'baz': 1}, {'baz': 2}]},
-            target=[],
-        )),
-
-        ('boolean-filter-true', dict(
-            string='foo[?flag = true].color',
-            data={'foo': [{"color": "blue", "flag": True},
-                          {"color": "green", "flag": False}]},
-            target=['blue']
-        )),
-
-        ('boolean-filter-false', dict(
-            string='foo[?flag = false].color',
-            data={'foo': [{"color": "blue", "flag": True},
-                          {"color": "green", "flag": False}]},
-            target=['green']
-        )),
-
-        ('boolean-filter-other-datatypes-involved', dict(
-            string='foo[?flag = true].color',
-            data={'foo': [{"color": "blue", "flag": True},
-                          {"color": "green", "flag": 2},
-                          {"color": "red", "flag": "hi"}]},
-            target=['blue']
-        )),
-
-        ('boolean-filter-string-true-string-literal', dict(
-            string='foo[?flag = "true"].color',
-            data={'foo': [{"color": "blue", "flag": True},
-                          {"color": "green", "flag": "true"}]},
-            target=['green']
-        )),
-    ]
-
-    def test_fields_value(self):
-        jsonpath.auto_id_field = None
-        result = parser.parse(self.string, debug=True).find(self.data)
-        if isinstance(self.target, list):
-            self.assertEqual(self.target, [r.value for r in result])
-        elif isinstance(self.target, set):
-            self.assertEqual(self.target, set([r.value for r in result]))
-        elif isinstance(self.target, (int, float)):
-            self.assertEqual(self.target, result[0].value)
-        else:
-            self.assertEqual(self.target, result[0].value)
 
 # NOTE(sileht): copy of tests/test_jsonpath.py
-# to ensure we didn't break jsonpath_ng
+# to ensure we didn't break bc_jsonpath_ng
 
 
 class TestJsonPath(base.BaseTestCase):
-    """Tests of the actual jsonpath functionality """
+    """Tests of the actual jsonpath functionality"""
 
     #
     # Check that the data value returned is good
@@ -373,68 +558,89 @@ class TestJsonPath(base.BaseTestCase):
 
     def test_fields_value(self):
         jsonpath.auto_id_field = None
-        self.check_cases([('foo', {'foo': 'baz'}, ['baz']),
-                          ('foo,baz', {'foo': 1, 'baz': 2}, [1, 2]),
-                          ('@foo', {'@foo': 1}, [1]),
-                          ('*', {'foo': 1, 'baz': 2}, set([1, 2]))])
+        self.check_cases(
+            [
+                ("foo", {"foo": "baz"}, ["baz"]),
+                ("foo,baz", {"foo": 1, "baz": 2}, [1, 2]),
+                ("@foo", {"@foo": 1}, [1]),
+                ("*", {"foo": 1, "baz": 2}, set([1, 2])),
+            ]
+        )
 
-        jsonpath.auto_id_field = 'id'
-        self.check_cases([('*', {'foo': 1, 'baz': 2}, set([1, 2, '`this`']))])
+        jsonpath.auto_id_field = "id"
+        self.check_cases([("*", {"foo": 1, "baz": 2}, set([1, 2, "`this`"]))])
 
     def test_root_value(self):
         jsonpath.auto_id_field = None
-        self.check_cases([
-            ('$', {'foo': 'baz'}, [{'foo': 'baz'}]),
-            ('foo.$', {'foo': 'baz'}, [{'foo': 'baz'}]),
-            ('foo.$.foo', {'foo': 'baz'}, ['baz']),
-        ])
+        self.check_cases(
+            [
+                ("$", {"foo": "baz"}, [{"foo": "baz"}]),
+                ("foo.$", {"foo": "baz"}, [{"foo": "baz"}]),
+                ("foo.$.foo", {"foo": "baz"}, ["baz"]),
+            ]
+        )
 
     def test_this_value(self):
         jsonpath.auto_id_field = None
-        self.check_cases([
-            ('`this`', {'foo': 'baz'}, [{'foo': 'baz'}]),
-            ('foo.`this`', {'foo': 'baz'}, ['baz']),
-            ('foo.`this`.baz', {'foo': {'baz': 3}}, [3]),
-        ])
+        self.check_cases(
+            [
+                ("`this`", {"foo": "baz"}, [{"foo": "baz"}]),
+                ("foo.`this`", {"foo": "baz"}, ["baz"]),
+                ("foo.`this`.baz", {"foo": {"baz": 3}}, [3]),
+            ]
+        )
 
     def test_index_value(self):
-        self.check_cases([
-            ('[0]', [42], [42]),
-            ('[5]', [42], []),
-            ('[2]', [34, 65, 29, 59], [29])
-        ])
+        self.check_cases([("[0]", [42], [42]), ("[5]", [42], []), ("[2]", [34, 65, 29, 59], [29])])
 
     def test_slice_value(self):
-        self.check_cases([('[*]', [1, 2, 3], [1, 2, 3]),
-                          ('[*]', moves.range(1, 4), [1, 2, 3]),
-                          ('[1:]', [1, 2, 3, 4], [2, 3, 4]),
-                          ('[:2]', [1, 2, 3, 4], [1, 2])])
+        self.check_cases(
+            [
+                ("[*]", [1, 2, 3], [1, 2, 3]),
+                ("[*]", range(1, 4), [1, 2, 3]),
+                ("[1:]", [1, 2, 3, 4], [2, 3, 4]),
+                ("[:2]", [1, 2, 3, 4], [1, 2]),
+            ]
+        )
 
         # Funky slice hacks
-        self.check_cases([
-            ('[*]', 1, [1]),  # This is a funky hack
-            ('[0:]', 1, [1]),  # This is a funky hack
-            ('[*]', {'foo': 1}, [{'foo': 1}]),  # This is a funky hack
-            ('[*].foo', {'foo': 1}, [1]),  # This is a funky hack
-        ])
+        self.check_cases(
+            [
+                ("[*]", 1, [1]),  # This is a funky hack
+                ("[0:]", 1, [1]),  # This is a funky hack
+                ("[*]", {"foo": 1}, [{"foo": 1}]),  # This is a funky hack
+                ("[*].foo", {"foo": 1}, [1]),  # This is a funky hack
+            ]
+        )
 
     def test_child_value(self):
-        self.check_cases([('foo.baz', {'foo': {'baz': 3}}, [3]),
-                          ('foo.baz', {'foo': {'baz': [3]}}, [[3]]),
-                          ('foo.baz.bizzle', {'foo': {'baz': {'bizzle': 5}}},
-                           [5])])
+        self.check_cases(
+            [
+                ("foo.baz", {"foo": {"baz": 3}}, [3]),
+                ("foo.baz", {"foo": {"baz": [3]}}, [[3]]),
+                ("foo.baz.bizzle", {"foo": {"baz": {"bizzle": 5}}}, [5]),
+            ]
+        )
 
     def test_descendants_value(self):
-        self.check_cases([
-            ('foo..baz', {'foo': {'baz': 1, 'bing': {'baz': 2}}}, [1, 2]),
-            ('foo..baz', {'foo': [{'baz': 1}, {'baz': 2}]}, [1, 2]),
-        ])
+        self.check_cases(
+            [
+                ("foo..baz", {"foo": {"baz": 1, "bing": {"baz": 2}}}, [1, 2]),
+                ("foo..baz", {"foo": [{"baz": 1}, {"baz": 2}]}, [1, 2]),
+            ]
+        )
 
     def test_parent_value(self):
-        self.check_cases([('foo.baz.`parent`', {'foo': {'baz': 3}},
-                           [{'baz': 3}]),
-                          ('foo.`parent`.foo.baz.`parent`.baz.bizzle',
-                           {'foo': {'baz': {'bizzle': 5}}}, [5])])
+        self.check_cases(
+            [
+                ("foo.baz.`parent`", {"foo": {"baz": 3}}, [{"baz": 3}]),
+                (
+                    "foo.`parent`.foo.baz.`parent`.baz.bizzle",
+                    {"foo": {"baz": {"bizzle": 5}}},
+                    [5],
+                ),
+            ]
+        )
 
     def test_hyphen_key(self):
         # NOTE(sileht): hyphen is now a operator
@@ -443,10 +649,16 @@ class TestJsonPath(base.BaseTestCase):
         #                  ('foo.[bar-baz,blah-blah]',
         #                   {'foo': {'bar-baz': 3, 'blah-blah': 5}},
         #                   [3, 5])])
-        self.check_cases([('foo."bar-baz"', {'foo': {'bar-baz': 3}}, [3]),
-                          ('foo.["bar-baz","blah-blah"]',
-                           {'foo': {'bar-baz': 3, 'blah-blah': 5}},
-                           [3, 5])])
+        self.check_cases(
+            [
+                ('foo."bar-baz"', {"foo": {"bar-baz": 3}}, [3]),
+                (
+                    'foo.["bar-baz","blah-blah"]',
+                    {"foo": {"bar-baz": 3, "blah-blah": 5}},
+                    [3, 5],
+                ),
+            ]
+        )
         # self.assertRaises(lexer.JsonPathLexerError, self.check_cases,
         #                  [('foo.-baz', {'foo': {'-baz': 8}}, [8])])
 
@@ -472,109 +684,141 @@ class TestJsonPath(base.BaseTestCase):
 
     def test_fields_paths(self):
         jsonpath.auto_id_field = None
-        self.check_paths([('foo', {'foo': 'baz'}, ['foo']),
-                          ('foo,baz', {'foo': 1, 'baz': 2}, ['foo', 'baz']),
-                          ('*', {'foo': 1, 'baz': 2}, set(['foo', 'baz']))])
+        self.check_paths(
+            [
+                ("foo", {"foo": "baz"}, ["foo"]),
+                ("foo,baz", {"foo": 1, "baz": 2}, ["foo", "baz"]),
+                ("*", {"foo": 1, "baz": 2}, set(["foo", "baz"])),
+            ]
+        )
 
-        jsonpath.auto_id_field = 'id'
-        self.check_paths([('*', {'foo': 1, 'baz': 2},
-                           set(['foo', 'baz', 'id']))])
+        jsonpath.auto_id_field = "id"
+        self.check_paths([("*", {"foo": 1, "baz": 2}, set(["foo", "baz", "id"]))])
 
     def test_root_paths(self):
         jsonpath.auto_id_field = None
-        self.check_paths([
-            ('$', {'foo': 'baz'}, ['$']),
-            ('foo.$', {'foo': 'baz'}, ['$']),
-            ('foo.$.foo', {'foo': 'baz'}, ['foo']),
-        ])
+        self.check_paths(
+            [
+                ("$", {"foo": "baz"}, ["$"]),
+                ("foo.$", {"foo": "baz"}, ["$"]),
+                ("foo.$.foo", {"foo": "baz"}, ["foo"]),
+            ]
+        )
 
     def test_this_paths(self):
         jsonpath.auto_id_field = None
-        self.check_paths([
-            ('`this`', {'foo': 'baz'}, ['`this`']),
-            ('foo.`this`', {'foo': 'baz'}, ['foo']),
-            ('foo.`this`.baz', {'foo': {'baz': 3}}, ['foo.baz']),
-        ])
+        self.check_paths(
+            [
+                ("`this`", {"foo": "baz"}, ["`this`"]),
+                ("foo.`this`", {"foo": "baz"}, ["foo"]),
+                ("foo.`this`.baz", {"foo": {"baz": 3}}, ["foo.baz"]),
+            ]
+        )
 
     def test_index_paths(self):
-        self.check_paths([('[0]', [42], ['[0]']),
-                          ('[2]', [34, 65, 29, 59], ['[2]'])])
+        self.check_paths([("[0]", [42], ["[0]"]), ("[2]", [34, 65, 29, 59], ["[2]"])])
 
     def test_slice_paths(self):
-        self.check_paths([('[*]', [1, 2, 3], ['[0]', '[1]', '[2]']),
-                          ('[1:]', [1, 2, 3, 4], ['[1]', '[2]', '[3]'])])
+        self.check_paths(
+            [
+                ("[*]", [1, 2, 3], ["[0]", "[1]", "[2]"]),
+                ("[1:]", [1, 2, 3, 4], ["[1]", "[2]", "[3]"]),
+            ]
+        )
 
     def test_child_paths(self):
-        self.check_paths([('foo.baz', {'foo': {'baz': 3}}, ['foo.baz']),
-                          ('foo.baz', {'foo': {'baz': [3]}}, ['foo.baz']),
-                          ('foo.baz.bizzle', {'foo': {'baz': {'bizzle': 5}}},
-                           ['foo.baz.bizzle'])])
+        self.check_paths(
+            [
+                ("foo.baz", {"foo": {"baz": 3}}, ["foo.baz"]),
+                ("foo.baz", {"foo": {"baz": [3]}}, ["foo.baz"]),
+                ("foo.baz.bizzle", {"foo": {"baz": {"bizzle": 5}}}, ["foo.baz.bizzle"]),
+            ]
+        )
 
     def test_descendants_paths(self):
-        self.check_paths([('foo..baz', {'foo': {'baz': 1, 'bing': {'baz': 2}}},
-                           ['foo.baz', 'foo.bing.baz'])])
+        self.check_paths(
+            [
+                (
+                    "foo..baz",
+                    {"foo": {"baz": 1, "bing": {"baz": 2}}},
+                    ["foo.baz", "foo.bing.baz"],
+                )
+            ]
+        )
 
     #
     # Check the "auto_id_field" feature
     #
     def test_fields_auto_id(self):
         jsonpath.auto_id_field = "id"
-        self.check_cases([('foo.id', {'foo': 'baz'}, ['foo']),
-                          ('foo.id', {'foo': {'id': 'baz'}}, ['baz']),
-                          ('foo,baz.id', {'foo': 1, 'baz': 2}, ['foo', 'baz']),
-                          ('*.id',
-                           {'foo': {'id': 1},
-                            'baz': 2},
-                           set(['1', 'baz']))])
+        self.check_cases(
+            [
+                ("foo.id", {"foo": "baz"}, ["foo"]),
+                ("foo.id", {"foo": {"id": "baz"}}, ["baz"]),
+                ("foo,baz.id", {"foo": 1, "baz": 2}, ["foo", "baz"]),
+                ("*.id", {"foo": {"id": 1}, "baz": 2}, set(["1", "baz"])),
+            ]
+        )
 
     def test_root_auto_id(self):
-        jsonpath.auto_id_field = 'id'
-        self.check_cases([
-            ('$.id', {'foo': 'baz'}, ['$']),  # This is a wonky case that is
-                                              # not that interesting
-            ('foo.$.id', {'foo': 'baz', 'id': 'bizzle'}, ['bizzle']),
-            ('foo.$.baz.id', {'foo': 4, 'baz': 3}, ['baz']),
-        ])
+        jsonpath.auto_id_field = "id"
+        self.check_cases(
+            [
+                ("$.id", {"foo": "baz"}, ["$"]),  # This is a wonky case that is
+                # not that interesting
+                ("foo.$.id", {"foo": "baz", "id": "bizzle"}, ["bizzle"]),
+                ("foo.$.baz.id", {"foo": 4, "baz": 3}, ["baz"]),
+            ]
+        )
 
     def test_this_auto_id(self):
-        jsonpath.auto_id_field = 'id'
-        self.check_cases([
-            ('id', {'foo': 'baz'}, ['`this`']),  # This is, again, a wonky case
-                                                 # that is not that interesting
-            ('foo.`this`.id', {'foo': 'baz'}, ['foo']),
-            ('foo.`this`.baz.id', {'foo': {'baz': 3}}, ['foo.baz']),
-        ])
+        jsonpath.auto_id_field = "id"
+        self.check_cases(
+            [
+                ("id", {"foo": "baz"}, ["`this`"]),  # This is, again, a wonky case
+                # that is not that interesting
+                ("foo.`this`.id", {"foo": "baz"}, ["foo"]),
+                ("foo.`this`.baz.id", {"foo": {"baz": 3}}, ["foo.baz"]),
+            ]
+        )
 
     def test_index_auto_id(self):
         jsonpath.auto_id_field = "id"
-        self.check_cases([('[0].id', [42], ['[0]']),
-                          ('[2].id', [34, 65, 29, 59], ['[2]'])])
+        self.check_cases([("[0].id", [42], ["[0]"]), ("[2].id", [34, 65, 29, 59], ["[2]"])])
 
     def test_slice_auto_id(self):
         jsonpath.auto_id_field = "id"
-        self.check_cases([('[*].id', [1, 2, 3], ['[0]', '[1]', '[2]']),
-                          ('[1:].id', [1, 2, 3, 4], ['[1]', '[2]', '[3]'])])
+        self.check_cases(
+            [
+                ("[*].id", [1, 2, 3], ["[0]", "[1]", "[2]"]),
+                ("[1:].id", [1, 2, 3, 4], ["[1]", "[2]", "[3]"]),
+            ]
+        )
 
     def test_child_auto_id(self):
         jsonpath.auto_id_field = "id"
-        self.check_cases([('foo.baz.id', {'foo': {'baz': 3}}, ['foo.baz']),
-                          ('foo.baz.id', {'foo': {'baz': [3]}}, ['foo.baz']),
-                          ('foo.baz.id', {'foo': {'id': 'bizzle', 'baz': 3}},
-                           ['bizzle.baz']),
-                          ('foo.baz.id', {'foo': {'baz': {'id': 'hi'}}},
-                           ['foo.hi']),
-                          ('foo.baz.bizzle.id',
-                           {'foo': {'baz': {'bizzle': 5}}},
-                           ['foo.baz.bizzle'])])
+        self.check_cases(
+            [
+                ("foo.baz.id", {"foo": {"baz": 3}}, ["foo.baz"]),
+                ("foo.baz.id", {"foo": {"baz": [3]}}, ["foo.baz"]),
+                ("foo.baz.id", {"foo": {"id": "bizzle", "baz": 3}}, ["bizzle.baz"]),
+                ("foo.baz.id", {"foo": {"baz": {"id": "hi"}}}, ["foo.hi"]),
+                (
+                    "foo.baz.bizzle.id",
+                    {"foo": {"baz": {"bizzle": 5}}},
+                    ["foo.baz.bizzle"],
+                ),
+            ]
+        )
 
     def test_descendants_auto_id(self):
         jsonpath.auto_id_field = "id"
-        self.check_cases([('foo..baz.id',
-                           {'foo': {
-                               'baz': 1,
-                               'bing': {
-                                   'baz': 2
-                               }
-                           }},
-                           ['foo.baz',
-                            'foo.bing.baz'])])
+        self.check_cases(
+            [
+                (
+                    "foo..baz.id",
+                    {"foo": {"baz": 1, "bing": {"baz": 2}}},
+                    ["foo.baz", "foo.bing.baz"],
+                )
+            ]
+        )

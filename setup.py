@@ -1,39 +1,52 @@
 import io
+from pathlib import Path
+
 import setuptools
 
 
+def get_version():
+    """Parse package __version__.py to get version."""
+    versionpy = (Path("bc_jsonpath_ng") / "__version__.py").read_text()
+    return versionpy.split("'")[1]
+
+
 setuptools.setup(
-    name='jsonpath-ng',
-    version='1.5.3',
+    name="bc-jsonpath-ng",
+    version=get_version(),
+    python_requires=">=3.7",
     description=(
-        'A final implementation of JSONPath for Python that aims to be ' 
-        'standard compliant, including arithmetic and binary comparison '
-        'operators and providing clear AST for metaprogramming.'
+        "A final implementation of JSONPath for Python that aims to be "
+        "standard compliant, including arithmetic and binary comparison "
+        "operators and providing clear AST for metaprogramming."
     ),
-    author='Tomas Aparicio',
-    author_email='tomas@aparicio.me',
-    url='https://github.com/h2non/jsonpath-ng',
-    license='Apache 2.0',
-    long_description=io.open('README.rst', encoding='utf-8').read(),
-    packages=['jsonpath_ng', 'jsonpath_ng.bin', 'jsonpath_ng.ext'],
+    author="bridgecrew",
+    author_email="meet@bridgecrew.io",
+    url="https://github.com/bridgecrewio/jsonpath-ng",
+    license="Apache License 2.0",
+    long_description=io.open("README.rst", encoding="utf-8").read(),
+    packages=[
+        "jsonpath_ng",
+        "jsonpath_ng.bin",
+        "jsonpath_ng.ext",
+    ],
     entry_points={
-        'console_scripts': [
-            'jsonpath_ng=jsonpath_ng.bin.jsonpath:entry_point'
-        ],
+        "console_scripts": ["jsonpath_ng=jsonpath_ng.bin.jsonpath:entry_point"],
     },
-    test_suite='tests',
+    test_suite="tests",
     install_requires=[
-        'ply', 'decorator', 'six'
+        "ply",
+        "decorator",
     ],
     classifiers=[
-        'Development Status :: 5 - Production/Stable',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-	'Programming Language :: Python :: 3.7',
-	'Programming Language :: Python :: 3.8',
+        "Development Status :: 5 - Production/Stable",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: Apache Software License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3 :: Only",
     ],
 )

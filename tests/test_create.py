@@ -3,8 +3,8 @@ from collections import namedtuple
 
 import pytest
 
-import jsonpath_ng
-from jsonpath_ng.ext import parse
+import bc_jsonpath_ng
+from bc_jsonpath_ng.ext import parse
 
 Params = namedtuple('Params', 'string initial_data insert_val target')
 
@@ -173,5 +173,5 @@ def test_build_doc(string, initial_data, insert_val, target):
 
 
 def test_doctests():
-    results = doctest.testmod(jsonpath_ng)
+    results = doctest.testmod(bc_jsonpath_ng)
     assert results.failed == 0

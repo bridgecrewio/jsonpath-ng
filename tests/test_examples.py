@@ -1,8 +1,8 @@
 import pytest
 
-from jsonpath_ng.ext.filter import Filter, Expression
-from jsonpath_ng.ext import parse
-from jsonpath_ng.jsonpath import *
+from bc_jsonpath_ng.ext.filter import Filter, Expression
+from bc_jsonpath_ng.ext import parse
+from bc_jsonpath_ng.jsonpath import *
 
 
 @pytest.mark.parametrize('string, parsed', [
