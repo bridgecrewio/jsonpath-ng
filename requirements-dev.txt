@@ -1,7 +1,6 @@
 oslotest
 pytest
 flake8
-testscenarios
 coverage
 coveralls
 pytest-cov

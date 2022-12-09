@@ -22,7 +22,6 @@ import pytest
 
 from bc_jsonpath_ng import jsonpath  # For setting the global auto_id_field flag
 from oslotest import base
-import testscenarios
 
 from bc_jsonpath_ng.ext import parser
 
@@ -413,7 +412,7 @@ from bc_jsonpath_ng.ext import parser
         (
             "foo[*][?(@.baz==1)]",
             {"foo": [{"baz": 1}, {"baz": 2}]},
-            [],
+            [{"baz": 1}],
         ),
         (
             "foo[?flag = true].color",
@@ -455,6 +454,16 @@ from bc_jsonpath_ng.ext import parser
                 ]
             },
             ["green"],
+        ),
+        (
+            "objects[?cow>5]",
+            {"objects": {"cow": 8}},
+            [{"cow": 8}],
+        ),
+        (
+            "objects[?cow<5]",
+            {"objects": {"cow": 8}},
+            [],
         ),
     ],
     ids=[
@@ -518,6 +527,8 @@ from bc_jsonpath_ng.ext import parser
         "boolean-filter-false",
         "boolean-filter-other-datatypes-involved",
         "boolean-filter-string-true-string-literal",
+        "filter-single-dict",
+        "filter-single-dict-empty",
     ],
 )
 def test_jsonpath_ext(query, data, expected):

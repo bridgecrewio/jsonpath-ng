@@ -42,7 +42,8 @@ class Filter(JSONPath):
         datum = DatumInContext.wrap(datum)
 
         if isinstance(datum.value, dict):
-            datum.value = list(datum.value.values())
+            # needed to use filter on normal dicts
+            datum.value = [datum.value]
 
         if not isinstance(datum.value, list):
             return []
