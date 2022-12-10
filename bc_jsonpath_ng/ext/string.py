@@ -12,15 +12,15 @@
 # under the License.
 
 import re
+
 from .. import DatumInContext, This
 
+SUB = re.compile(r"sub\(/(.*)/,\s+(.*)\)")
+SPLIT = re.compile(r"split\((.),\s+(\d+),\s+(\d+|-1)\)")
+STR = re.compile(r"str\(\)")
 
-SUB = re.compile("sub\(/(.*)/,\s+(.*)\)")
-SPLIT = re.compile("split\((.),\s+(\d+),\s+(\d+|-1)\)")
-STR = re.compile("str\(\)")
 
-
-class DefintionInvalid(Exception):
+class DefintionInvalidError(Exception):
     pass
 
 
@@ -33,7 +33,7 @@ class Sub(This):
     def __init__(self, method=None):
         m = SUB.match(method)
         if m is None:
-            raise DefintionInvalid("%s is not valid" % method)
+            raise DefintionInvalidError("%s is not valid" % method)
         self.expr = m.group(1).strip()
         self.repl = m.group(2).strip()
         self.regex = re.compile(self.expr)
@@ -48,13 +48,13 @@ class Sub(This):
             return [DatumInContext.wrap(value)]
 
     def __eq__(self, other):
-        return (isinstance(other, Sub) and self.method == other.method)
+        return isinstance(other, Sub) and self.method == other.method
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, self.method)
+        return "%s(%r)" % (self.__class__.__name__, self.method)
 
     def __str__(self):
-        return '`sub(/%s/, %s)`' % (self.expr, self.repl)
+        return "`sub(/%s/, %s)`" % (self.expr, self.repl)
 
 
 class Split(This):
@@ -66,7 +66,7 @@ class Split(This):
     def __init__(self, method=None):
         m = SPLIT.match(method)
         if m is None:
-            raise DefintionInvalid("%s is not valid" % method)
+            raise DefintionInvalidError("%s is not valid" % method)
         self.char = m.group(1)
         self.segment = int(m.group(2))
         self.max_split = int(m.group(3))
@@ -81,13 +81,13 @@ class Split(This):
         return [DatumInContext.wrap(value)]
 
     def __eq__(self, other):
-        return (isinstance(other, Split) and self.method == other.method)
+        return isinstance(other, Split) and self.method == other.method
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, self.method)
+        return "%s(%r)" % (self.__class__.__name__, self.method)
 
     def __str__(self):
-        return '`%s`' % self.method
+        return "`%s`" % self.method
 
 
 class Str(This):
@@ -99,7 +99,7 @@ class Str(This):
     def __init__(self, method=None):
         m = STR.match(method)
         if m is None:
-            raise DefintionInvalid("%s is not valid" % method)
+            raise DefintionInvalidError("%s is not valid" % method)
         self.method = method
 
     def find(self, datum):
@@ -108,10 +108,10 @@ class Str(This):
         return [DatumInContext.wrap(value)]
 
     def __eq__(self, other):
-        return (isinstance(other, Str) and self.method == other.method)
+        return isinstance(other, Str) and self.method == other.method
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, self.method)
+        return "%s(%r)" % (self.__class__.__name__, self.method)
 
     def __str__(self):
-        return '`str()`'
+        return "`str()`"

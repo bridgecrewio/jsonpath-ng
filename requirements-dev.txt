@@ -1,6 +1,19 @@
+# install also runtime dependencies
+-r requirements.txt
+
+# build
+setuptools>=65.0.0
+
+# test
 oslotest
 pytest
-flake8
 coverage
 coveralls
 pytest-cov
+
+# lint
+pre-commit
+bandit
+black
+flake8
+isort

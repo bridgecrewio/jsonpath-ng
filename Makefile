@@ -4,8 +4,8 @@ NO_COLOR=\033[0m
 all: lint unit
 
 export PYTHONPATH:=${PWD}
-version=`python -c 'import jsonpath_ng; print(jsonpath_ng.__version__)'`
-filename=jsonpath_ng-`python -c 'import jsonpath_ng; print(jsonpath_ng.__version__)'`.tar.gz
+version=`python -c 'import bc_jsonpath_ng; print(bc_jsonpath_ng.__version__)'`
+filename=bc_jsonpath_ng-`python -c 'import bc_jsonpath_ng; print(bc_jsonpath_ng.__version__)'`.tar.gz
 
 apidocs:
 	@sphinx-apidoc -f --follow-links -H "API documentation" -o docs/source jsonpath_ng
@@ -24,10 +24,10 @@ lint:
 
 test: clean
 	@echo "$(OK_COLOR)==> Runnings tests ...$(NO_COLOR)"
-	@py.test -s -v --capture sys --cov jsonpath_ng --cov-report term-missing
+	@py.test -s -v --capture sys --cov bc_jsonpath_ng --cov-report term-missing
 
 coverage:
-	@coverage run --source jsonpath_ng -m py.test
+	@coverage run --source bc_jsonpath_ng -m py.test
 	@coverage report
 
 tag:
@@ -37,10 +37,10 @@ tag:
 	@git push origin "v$(version)"
 
 bump:
-	@bumpversion --commit --tag --current-version $(version) patch jsonpath_ng/__init__.py --allow-dirty
+	@bumpversion --commit --tag --current-version $(version) patch bc_jsonpath_ng/__version__.py --allow-dirty
 
 bump-minor:
-	@bumpversion --commit --tag --current-version $(version) minor jsonpath_ng/__init__.py --allow-dirty
+	@bumpversion --commit --tag --current-version $(version) minor bc_jsonpath_ng/__version__.py --allow-dirty
 
 history:
 	@git changelog --tag $(version)

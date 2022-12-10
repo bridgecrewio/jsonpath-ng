@@ -7,14 +7,14 @@ from bc_jsonpath_ng.ext import parse as ext_parse
 
 def test_rw_exception_class():
     with pytest.raises(JSONPathError):
-        rw_parse('foo.bar.`grandparent`.baz')
+        rw_parse("foo.bar.`grandparent`.baz")
 
 
 def test_rw_exception_subclass():
     with pytest.raises(JsonPathParserError):
-        rw_parse('foo.bar.`grandparent`.baz')
+        rw_parse("foo.bar.`grandparent`.baz")
 
 
 def test_ext_exception_subclass():
     with pytest.raises(JsonPathParserError):
-        ext_parse('foo.bar.`grandparent`.baz')
+        ext_parse("foo.bar.`grandparent`.baz")

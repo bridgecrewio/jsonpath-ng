@@ -1,0 +1,8 @@
+# can be moved to pyproject.toml some day
+# https://github.com/PyCQA/flake8/issues/234
+[flake8]
+max-line-length = 120
+min_python_version = 3.7.0
+ignore = A003,B950,E203,E501,W503
+select = C,E,F,W,B9,TYP,A,PT,N
+exclude = tests

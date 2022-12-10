@@ -12,7 +12,8 @@
 # under the License.
 
 import functools
-from .. import This, DatumInContext, JSONPath
+
+from .. import DatumInContext, JSONPath, This
 
 
 class SortedThis(This):
@@ -20,6 +21,7 @@ class SortedThis(This):
 
     Concrete syntax is '`sorted`' or [\\field,/field].
     """
+
     def __init__(self, expressions=None):
         self.expressions = expressions
 
@@ -31,9 +33,13 @@ class SortedThis(This):
             field, reverse = expr
             l_datum = field.find(left)
             r_datum = field.find(right)
-            if (not l_datum or not r_datum or
-                    len(l_datum) > 1 or len(r_datum) > 1 or
-                    l_datum[0].value == r_datum[0].value):
+            if (
+                not l_datum
+                or not r_datum
+                or len(l_datum) > 1
+                or len(r_datum) > 1
+                or l_datum[0].value == r_datum[0].value
+            ):
                 # NOTE(sileht): should we do something if the expression
                 # match multiple fields, for now ignore them
                 continue
@@ -49,20 +55,18 @@ class SortedThis(This):
             return datum
 
         if isinstance(datum.value, dict) or isinstance(datum.value, list):
-            key = (functools.cmp_to_key(self._compare)
-                   if self.expressions else None)
-            return [DatumInContext.wrap(
-                [value for value in sorted(datum.value, key=key)])]
+            key = functools.cmp_to_key(self._compare) if self.expressions else None
+            return [DatumInContext.wrap(sorted(datum.value, key=key))]
         return datum
 
     def __eq__(self, other):
         return isinstance(other, Len)
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, self.expressions)
+        return "%s(%r)" % (self.__class__.__name__, self.expressions)
 
     def __str__(self):
-        return '[?%s]' % self.expressions
+        return "[?%s]" % self.expressions
 
 
 class Len(JSONPath):
@@ -78,15 +82,13 @@ class Len(JSONPath):
         except TypeError:
             return []
         else:
-            return [DatumInContext(value,
-                                               context=None,
-                                               path=Len())]
+            return [DatumInContext(value, context=None, path=Len())]
 
     def __eq__(self, other):
         return isinstance(other, Len)
 
     def __str__(self):
-        return '`len`'
+        return "`len`"
 
     def __repr__(self):
-        return 'Len()'
+        return "Len()"
