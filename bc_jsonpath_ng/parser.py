@@ -1,8 +1,9 @@
-from __future__ import absolute_import, division, generators, nested_scopes
+from __future__ import annotations
 
 import logging
 import os.path
 import sys
+from typing import TYPE_CHECKING
 
 import ply.yacc
 
@@ -10,10 +11,13 @@ from bc_jsonpath_ng import Child, Descendants, Fields, Index, Intersect, Parent,
 from bc_jsonpath_ng.exceptions import JsonPathParserError
 from bc_jsonpath_ng.lexer import JsonPathLexer
 
+if TYPE_CHECKING:
+    from bc_jsonpath_ng import JSONPath
+
 logger = logging.getLogger(__name__)
 
 
-def parse(string):
+def parse(string: str):
     return JsonPathParser().parse(string)
 
 
@@ -24,7 +28,7 @@ class JsonPathParser(object):
 
     tokens = JsonPathLexer.tokens
 
-    def __init__(self, debug=False, lexer_class=None):
+    def __init__(self, debug: bool = False, lexer_class: JsonPathLexer | None = None) -> None:
         if self.__doc__ is None:
             raise JsonPathParserError(
                 "Docstrings have been removed! By design of PLY, "
@@ -35,11 +39,11 @@ class JsonPathParser(object):
         self.debug = debug
         self.lexer_class = lexer_class or JsonPathLexer  # Crufty but works around statefulness in PLY
 
-    def parse(self, string, lexer=None):
+    def parse(self, string: str, lexer: JsonPathLexer | None = None) -> JSONPath:
         lexer = lexer or self.lexer_class()
         return self.parse_token_stream(lexer.tokenize(string))
 
-    def parse_token_stream(self, token_iterator, start_symbol="jsonpath"):
+    def parse_token_stream(self, token_iterator, start_symbol: str = "jsonpath"):
 
         # Since PLY has some crufty aspects and dumps files, we try to keep them local
         # However, we need to derive the name of the output Python file :-/

@@ -1,6 +1,7 @@
-from __future__ import absolute_import, division, generators, nested_scopes, unicode_literals
+from __future__ import annotations
 
 import logging
+from typing import Any
 
 # Get logger name
 logger = logging.getLogger(__name__)
@@ -20,7 +21,7 @@ class JSONPath(object):
     JSONPath semantics.
     """
 
-    def find(self, data):
+    def find(self, data: dict[str, Any]) -> list[DatumInContext]:
         """
         All `JSONPath` types support `find()`, which returns an iterable of `DatumInContext`s.
         They keep track of the path followed to the current location, so if the calling code
@@ -28,10 +29,10 @@ class JSONPath(object):
         """
         raise NotImplementedError()
 
-    def find_or_create(self, data):
+    def find_or_create(self, data: dict[str, Any]) -> list[DatumInContext]:
         return self.find(data)
 
-    def update(self, data, val):
+    def update(self, data: dict[str, Any], val: Any) -> Any:
         """
         Returns `data` with the specified path replaced by `val`. Only updates
         if the specified path exists.
