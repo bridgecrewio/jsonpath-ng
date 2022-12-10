@@ -24,6 +24,7 @@ setuptools.setup(
     url="https://github.com/bridgecrewio/jsonpath-ng",
     license="Apache License 2.0",
     long_description=io.open("README.rst", encoding="utf-8").read(),
+    long_description_content_type="text/x-rst",
     packages=[
         "bc_jsonpath_ng",
         "bc_jsonpath_ng.bin",

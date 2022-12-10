@@ -1,5 +1,5 @@
 Python JSONPath Next-Generation |Build Status| |PyPI| |PyPI - Python Version|
-=====================================================
+=============================================================================
 
 A final implementation of JSONPath for Python that aims to be standard compliant, including arithmetic
 and binary comparison operators, as defined in the original `JSONPath proposal`_.
