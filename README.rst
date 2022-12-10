@@ -1,4 +1,4 @@
-Python JSONPath Next-Generation |Build Status| |PyPI|
+Python JSONPath Next-Generation |Build Status| |PyPI| |PyPI - Python Version|
 =====================================================
 
 A final implementation of JSONPath for Python that aims to be standard compliant, including arithmetic
@@ -11,7 +11,7 @@ About
 -----
 
 This library provides a robust and significantly extended implementation
-of JSONPath for Python. It is tested with CPython 2.6, 2.7 & 3.x.
+of JSONPath for Python.
 
 This library differs from other JSONPath implementations in that it is a
 full *language* implementation, meaning the JSONPath expressions are
@@ -287,11 +287,10 @@ cause a failure.
 Contributors
 ------------
 
-This package is authored and maintained by:
+This package was authored by:
 
 -  `Kenn Knowles <https://github.com/kennknowles>`__
-   (`@kennknowles <https://twitter.com/KennKnowles>`__)
--  `Tomas Aparicio <https://github.com/h2non>`
+-  `Tomas Aparicio <https://github.com/h2non>`__
 
 with the help of patches submitted by `these contributors <https://github.com/kennknowles/python-jsonpath-ng/graphs/contributors>`__.
 
@@ -321,10 +320,12 @@ limitations under the License.
 .. _`jsonpath-rw-ext`: https://pypi.python.org/pypi/jsonpath-rw-ext/
 
 .. |PyPi downloads| image:: https://pypip.in/d/jsonpath-ng/badge.png
-   :target: https://pypi.python.org/pypi/jsonpath-ng
-.. |Build Status| image:: https://travis-ci.org/h2non/jsonpath-ng.svg?branch=master
-   :target: https://travis-ci.org/h2non/jsonpath-ng
-.. |PyPI| image:: https://img.shields.io/pypi/v/jsonpath-ng.svg?maxAge=2592000?style=flat-square
-   :target: https://pypi.python.org/pypi/jsonpath-ng
+   :target: https://pypi.python.org/pypi/bc-jsonpath-ng
+.. |Build Status| image:: https://github.com/bridgecrewio/jsonpath-ng/workflows/Release/badge.svg?style=flat
+   :target: https://github.com/bridgecrewio/jsonpath-ng/actions/workflows/release.yml
+.. |PyPI| image:: https://img.shields.io/pypi/v/bc-jsonpath-ng
+   :target: https://pypi.python.org/pypi/bc-jsonpath-ng
+.. |PyPI - Python Version| image:: https://img.shields.io/pypi/pyversions/bc-jsonpath-ng
+   :target: https://pypi.python.org/pypi/bc-jsonpath-ng
 .. |Documentation Status| image:: https://img.shields.io/badge/docs-latest-green.svg?style=flat
    :target: http://jsonpath-ng.readthedocs.io/en/latest/?badge=latest

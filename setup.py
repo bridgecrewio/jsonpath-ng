@@ -29,6 +29,7 @@ setuptools.setup(
         "bc_jsonpath_ng.bin",
         "bc_jsonpath_ng.ext",
     ],
+    include_package_data=True,
     entry_points={
         "console_scripts": ["bc_jsonpath_ng=bc_jsonpath_ng.bin.jsonpath:entry_point"],
     },
