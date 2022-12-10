@@ -16,7 +16,7 @@ import re
 
 from .. import DatumInContext, Index, JSONPath
 
-OPERATOR_MAP = {
+OPERATOR_MAP = {  # pragma: no cover
     "!=": operator.ne,
     "==": operator.eq,
     "=": operator.eq,

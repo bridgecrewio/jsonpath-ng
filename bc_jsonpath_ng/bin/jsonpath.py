@@ -6,7 +6,7 @@
 # as published by Sam Hocevar. See the COPYING file for more details.
 
 # Use modern Python
-from __future__ import absolute_import, print_function, unicode_literals
+from __future__ import annotations
 
 import argparse
 import glob

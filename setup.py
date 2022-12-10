@@ -7,7 +7,7 @@ import setuptools
 def get_version():
     """Parse package __version__.py to get version."""
     versionpy = (Path("bc_jsonpath_ng") / "__version__.py").read_text()
-    return versionpy.split("'")[1]
+    return versionpy.split('"')[1]
 
 
 setuptools.setup(
@@ -25,12 +25,12 @@ setuptools.setup(
     license="Apache License 2.0",
     long_description=io.open("README.rst", encoding="utf-8").read(),
     packages=[
-        "jsonpath_ng",
-        "jsonpath_ng.bin",
-        "jsonpath_ng.ext",
+        "bc_jsonpath_ng",
+        "bc_jsonpath_ng.bin",
+        "bc_jsonpath_ng.ext",
     ],
     entry_points={
-        "console_scripts": ["jsonpath_ng=jsonpath_ng.bin.jsonpath:entry_point"],
+        "console_scripts": ["bc_jsonpath_ng=bc_jsonpath_ng.bin.jsonpath:entry_point"],
     },
     test_suite="tests",
     install_requires=[
@@ -47,6 +47,10 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3 :: Only",
+        "Typing :: Typed",
     ],
 )

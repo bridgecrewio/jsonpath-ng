@@ -10,12 +10,18 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations
 # under the License.
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from .. import Child, Fields, This, lexer, parser
 from . import arithmetic as _arithmetic
 from . import filter as _filter
 from . import iterable as _iterable
 from . import string as _string
+
+if TYPE_CHECKING:
+    from bc_jsonpath_ng import JSONPath
 
 
 class ExtendedJsonPathLexer(lexer.JsonPathLexer):
@@ -168,5 +174,5 @@ class ExtentedJsonPathParser(parser.JsonPathParser):
     )
 
 
-def parse(path, debug=False):
+def parse(path: str, debug: bool = False) -> JSONPath:
     return ExtentedJsonPathParser(debug=debug).parse(path)
