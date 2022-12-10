@@ -1,3 +1,2 @@
 ply
 decorator
-setuptools>=65.0.0

@@ -1,3 +1,9 @@
+# install also runtime dependencies
+-r requirements.txt
+
+# build
+setuptools>=65.0.0
+
 # test
 oslotest
 pytest
