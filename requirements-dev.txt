@@ -4,3 +4,6 @@ flake8
 coverage
 coveralls
 pytest-cov
+
+# lint
+pre-commit

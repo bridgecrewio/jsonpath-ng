@@ -1,12 +1,7 @@
-from __future__ import (
-    print_function,
-    absolute_import,
-    division,
-    generators,
-    nested_scopes,
-)
-import sys
+from __future__ import absolute_import, division, generators, nested_scopes, print_function
+
 import os.path
+import sys
 
 import ply.yacc
 
@@ -22,28 +17,28 @@ def parse(string):
 
 
 class JsonPathParser(object):
-    '''
+    """
     An LALR-parser for JsonPath
-    '''
+    """
 
     tokens = JsonPathLexer.tokens
 
     def __init__(self, debug=False, lexer_class=None):
         if self.__doc__ is None:
             raise JsonPathParserError(
-                'Docstrings have been removed! By design of PLY, '
-                'jsonpath-rw requires docstrings. You must not use '
-                'PYTHONOPTIMIZE=2 or python -OO.'
+                "Docstrings have been removed! By design of PLY, "
+                "jsonpath-rw requires docstrings. You must not use "
+                "PYTHONOPTIMIZE=2 or python -OO."
             )
 
         self.debug = debug
-        self.lexer_class = lexer_class or JsonPathLexer # Crufty but works around statefulness in PLY
+        self.lexer_class = lexer_class or JsonPathLexer  # Crufty but works around statefulness in PLY
 
-    def parse(self, string, lexer = None):
+    def parse(self, string, lexer=None):
         lexer = lexer or self.lexer_class()
         return self.parse_token_stream(lexer.tokenize(string))
 
-    def parse_token_stream(self, token_iterator, start_symbol='jsonpath'):
+    def parse_token_stream(self, token_iterator, start_symbol="jsonpath"):
 
         # Since PLY has some crufty aspects and dumps files, we try to keep them local
         # However, we need to derive the name of the output Python file :-/
@@ -53,51 +48,52 @@ class JsonPathParser(object):
         except:
             module_name = __name__
 
-        parsing_table_module = '_'.join([module_name, start_symbol, 'parsetab'])
+        parsing_table_module = "_".join([module_name, start_symbol, "parsetab"])
 
         # And we regenerate the parse table every time; it doesn't actually take that long!
-        new_parser = ply.yacc.yacc(module=self,
-                                   debug=self.debug,
-                                   tabmodule = parsing_table_module,
-                                   outputdir = output_directory,
-                                   write_tables=0,
-                                   start = start_symbol,
-                                   errorlog = logger)
+        new_parser = ply.yacc.yacc(
+            module=self,
+            debug=self.debug,
+            tabmodule=parsing_table_module,
+            outputdir=output_directory,
+            write_tables=0,
+            start=start_symbol,
+            errorlog=logger,
+        )
 
-        return new_parser.parse(lexer = IteratorToTokenStream(token_iterator))
+        return new_parser.parse(lexer=IteratorToTokenStream(token_iterator))
 
     # ===================== PLY Parser specification =====================
 
     precedence = [
-        ('left', ','),
-        ('left', 'DOUBLEDOT'),
-        ('left', '.'),
-        ('left', '|'),
-        ('left', '&'),
-        ('left', 'WHERE'),
+        ("left", ","),
+        ("left", "DOUBLEDOT"),
+        ("left", "."),
+        ("left", "|"),
+        ("left", "&"),
+        ("left", "WHERE"),
     ]
 
     def p_error(self, t):
-        raise JsonPathParserError('Parse error at %s:%s near token %s (%s)'
-                                  % (t.lineno, t.col, t.value, t.type))
+        raise JsonPathParserError("Parse error at %s:%s near token %s (%s)" % (t.lineno, t.col, t.value, t.type))
 
     def p_jsonpath_binop(self, p):
         """jsonpath : jsonpath '.' jsonpath
-                    | jsonpath DOUBLEDOT jsonpath
-                    | jsonpath WHERE jsonpath
-                    | jsonpath '|' jsonpath
-                    | jsonpath '&' jsonpath"""
+        | jsonpath DOUBLEDOT jsonpath
+        | jsonpath WHERE jsonpath
+        | jsonpath '|' jsonpath
+        | jsonpath '&' jsonpath"""
         op = p[2]
 
-        if op == '.':
+        if op == ".":
             p[0] = Child(p[1], p[3])
-        elif op == '..':
+        elif op == "..":
             p[0] = Descendants(p[1], p[3])
-        elif op == 'where':
+        elif op == "where":
             p[0] = Where(p[1], p[3])
-        elif op == '|':
+        elif op == "|":
             p[0] = Union(p[1], p[3])
-        elif op == '&':
+        elif op == "&":
             p[0] = Intersect(p[1], p[3])
 
     def p_jsonpath_fields(self, p):
@@ -106,13 +102,12 @@ class JsonPathParser(object):
 
     def p_jsonpath_named_operator(self, p):
         "jsonpath : NAMED_OPERATOR"
-        if p[1] == 'this':
+        if p[1] == "this":
             p[0] = This()
-        elif p[1] == 'parent':
+        elif p[1] == "parent":
             p[0] = Parent()
         else:
-            raise JsonPathParserError('Unknown named operator `%s` at %s:%s'
-                                      % (p[1], p.lineno(1), p.lexpos(1)))
+            raise JsonPathParserError("Unknown named operator `%s` at %s:%s" % (p[1], p.lineno(1), p.lexpos(1)))
 
     def p_jsonpath_root(self, p):
         "jsonpath : '$'"
@@ -149,9 +144,9 @@ class JsonPathParser(object):
     # Because fields in brackets cannot be '*' - that is reserved for array indices
     def p_fields_or_any(self, p):
         """fields_or_any : fields
-                         | '*'    """
-        if p[1] == '*':
-            p[0] = ['*']
+        | '*'"""
+        if p[1] == "*":
+            p[0] = ["*"]
         else:
             p[0] = p[1]
 
@@ -171,18 +166,19 @@ class JsonPathParser(object):
         "slice : '*'"
         p[0] = Slice()
 
-    def p_slice(self, p): # Currently does not support `step`
+    def p_slice(self, p):  # Currently does not support `step`
         "slice : maybe_int ':' maybe_int"
         p[0] = Slice(start=p[1], end=p[3])
 
     def p_maybe_int(self, p):
         """maybe_int : NUMBER
-                     | empty"""
+        | empty"""
         p[0] = p[1]
 
     def p_empty(self, p):
-        'empty :'
+        "empty :"
         p[0] = None
+
 
 class IteratorToTokenStream(object):
     def __init__(self, iterator):
@@ -195,7 +191,7 @@ class IteratorToTokenStream(object):
             return None
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logging.basicConfig()
     parser = JsonPathParser(debug=True)
     print(parser.parse(sys.stdin.read()))

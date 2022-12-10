@@ -12,14 +12,14 @@
 # under the License.
 
 import operator
-from .. import JSONPath, DatumInContext
 
+from .. import DatumInContext, JSONPath
 
 OPERATOR_MAP = {
-    '+': operator.add,
-    '-': operator.sub,
-    '*': operator.mul,
-    '/': operator.truediv,
+    "+": operator.add,
+    "-": operator.sub,
+    "*": operator.mul,
+    "/": operator.truediv,
 }
 
 
@@ -31,8 +31,7 @@ class Operation(JSONPath):
 
     def find(self, datum):
         result = []
-        if (isinstance(self.left, JSONPath)
-                and isinstance(self.right, JSONPath)):
+        if isinstance(self.left, JSONPath) and isinstance(self.right, JSONPath):
             left = self.left.find(datum)
             right = self.right.find(datum)
             if left and right and len(left) == len(right):
@@ -65,8 +64,7 @@ class Operation(JSONPath):
         return [DatumInContext.wrap(r) for r in result]
 
     def __repr__(self):
-        return '%s(%r%s%r)' % (self.__class__.__name__, self.left, self.op,
-                               self.right)
+        return "%s(%r%s%r)" % (self.__class__.__name__, self.left, self.op, self.right)
 
     def __str__(self):
-        return '%s%s%s' % (self.left, self.op, self.right)
+        return "%s%s%s" % (self.left, self.op, self.right)

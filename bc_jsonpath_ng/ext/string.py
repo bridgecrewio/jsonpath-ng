@@ -12,8 +12,8 @@
 # under the License.
 
 import re
-from .. import DatumInContext, This
 
+from .. import DatumInContext, This
 
 SUB = re.compile("sub\(/(.*)/,\s+(.*)\)")
 SPLIT = re.compile("split\((.),\s+(\d+),\s+(\d+|-1)\)")
@@ -48,13 +48,13 @@ class Sub(This):
             return [DatumInContext.wrap(value)]
 
     def __eq__(self, other):
-        return (isinstance(other, Sub) and self.method == other.method)
+        return isinstance(other, Sub) and self.method == other.method
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, self.method)
+        return "%s(%r)" % (self.__class__.__name__, self.method)
 
     def __str__(self):
-        return '`sub(/%s/, %s)`' % (self.expr, self.repl)
+        return "`sub(/%s/, %s)`" % (self.expr, self.repl)
 
 
 class Split(This):
@@ -81,13 +81,13 @@ class Split(This):
         return [DatumInContext.wrap(value)]
 
     def __eq__(self, other):
-        return (isinstance(other, Split) and self.method == other.method)
+        return isinstance(other, Split) and self.method == other.method
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, self.method)
+        return "%s(%r)" % (self.__class__.__name__, self.method)
 
     def __str__(self):
-        return '`%s`' % self.method
+        return "`%s`" % self.method
 
 
 class Str(This):
@@ -108,10 +108,10 @@ class Str(This):
         return [DatumInContext.wrap(value)]
 
     def __eq__(self, other):
-        return (isinstance(other, Str) and self.method == other.method)
+        return isinstance(other, Str) and self.method == other.method
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, self.method)
+        return "%s(%r)" % (self.__class__.__name__, self.method)
 
     def __str__(self):
-        return '`str()`'
+        return "`str()`"

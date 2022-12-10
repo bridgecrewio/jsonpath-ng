@@ -11,10 +11,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from .. import lexer
-from .. import parser
-from .. import Fields, This, Child
-
+from .. import Child, Fields, This, lexer, parser
 from . import arithmetic as _arithmetic
 from . import filter as _filter
 from . import iterable as _iterable
@@ -23,32 +20,31 @@ from . import string as _string
 
 class ExtendedJsonPathLexer(lexer.JsonPathLexer):
     """Custom LALR-lexer for JsonPath"""
-    literals = lexer.JsonPathLexer.literals + ['?', '@', '+', '*', '/', '-']
-    tokens = (['BOOL'] +
-              parser.JsonPathLexer.tokens +
-              ['FILTER_OP', 'SORT_DIRECTION', 'FLOAT'])
 
-    t_FILTER_OP = r'=~|==?|<=|>=|!=|<|>'
+    literals = lexer.JsonPathLexer.literals + ["?", "@", "+", "*", "/", "-"]
+    tokens = ["BOOL"] + parser.JsonPathLexer.tokens + ["FILTER_OP", "SORT_DIRECTION", "FLOAT"]
+
+    t_FILTER_OP = r"=~|==?|<=|>=|!=|<|>"
 
     def t_BOOL(self, t):
-        r'true|false'
-        t.value = True if t.value == 'true' else False
+        r"true|false"
+        t.value = True if t.value == "true" else False
         return t
 
     def t_SORT_DIRECTION(self, t):
-        r',?\s*(/|\\)'
+        r",?\s*(/|\\)"
         t.value = t.value[-1]
         return t
 
     def t_ID(self, t):
-        r'@?[a-zA-Z_][a-zA-Z0-9_@\-]*'
+        r"@?[a-zA-Z_][a-zA-Z0-9_@\-]*"
         # NOTE(sileht): This fixes the ID expression to be
         # able to use @ for `This` like any json query
-        t.type = self.reserved_words.get(t.value, 'ID')
+        t.type = self.reserved_words.get(t.value, "ID")
         return t
 
     def t_FLOAT(self, t):
-        r'-?\d+\.\d+'
+        r"-?\d+\.\d+"
         t.value = float(t.value)
         return t
 
@@ -64,37 +60,37 @@ class ExtentedJsonPathParser(parser.JsonPathParser):
 
     def p_jsonpath_operator_jsonpath(self, p):
         """jsonpath : NUMBER operator NUMBER
-                    | FLOAT operator FLOAT
-                    | ID operator ID
-                    | NUMBER operator jsonpath
-                    | FLOAT operator jsonpath
-                    | jsonpath operator NUMBER
-                    | jsonpath operator FLOAT
-                    | jsonpath operator jsonpath
+        | FLOAT operator FLOAT
+        | ID operator ID
+        | NUMBER operator jsonpath
+        | FLOAT operator jsonpath
+        | jsonpath operator NUMBER
+        | jsonpath operator FLOAT
+        | jsonpath operator jsonpath
         """
 
         # NOTE(sileht): If we have choice between a field or a string we
         # always choice string, because field can be full qualified
         # like $.foo == foo and where string can't.
         for i in [1, 3]:
-            if (isinstance(p[i], Fields) and len(p[i].fields) == 1):  # noqa
+            if isinstance(p[i], Fields) and len(p[i].fields) == 1:
                 p[i] = p[i].fields[0]
 
         p[0] = _arithmetic.Operation(p[1], p[2], p[3])
 
     def p_operator(self, p):
         """operator : '+'
-                    | '-'
-                    | '*'
-                    | '/'
+        | '-'
+        | '*'
+        | '/'
         """
         p[0] = p[1]
 
     def p_jsonpath_named_operator(self, p):
         "jsonpath : NAMED_OPERATOR"
-        if p[1] == 'len':
+        if p[1] == "len":
             p[0] = _iterable.Len()
-        elif p[1] == 'sorted':
+        elif p[1] == "sorted":
             p[0] = _iterable.SortedThis()
         elif p[1].startswith("split("):
             p[0] = _string.Split(p[1])
@@ -107,10 +103,10 @@ class ExtentedJsonPathParser(parser.JsonPathParser):
 
     def p_expression(self, p):
         """expression : jsonpath
-                      | jsonpath FILTER_OP ID
-                      | jsonpath FILTER_OP FLOAT
-                      | jsonpath FILTER_OP NUMBER
-                      | jsonpath FILTER_OP BOOL
+        | jsonpath FILTER_OP ID
+        | jsonpath FILTER_OP FLOAT
+        | jsonpath FILTER_OP NUMBER
+        | jsonpath FILTER_OP BOOL
         """
         if len(p) == 2:
             left, op, right = p[1], None, None
@@ -132,7 +128,7 @@ class ExtentedJsonPathParser(parser.JsonPathParser):
         p[0] = p[2]
 
     def p_filter(self, p):
-        "filter : '?' expressions "
+        "filter : '?' expressions"
         p[0] = _filter.Filter(p[2])
 
     def p_jsonpath_filter(self, p):
@@ -160,12 +156,16 @@ class ExtentedJsonPathParser(parser.JsonPathParser):
         "jsonpath : '@'"
         p[0] = This()
 
-    precedence = [
-        ('left', '+', '-'),
-        ('left', '*', '/'),
-    ] + parser.JsonPathParser.precedence + [
-        ('nonassoc', 'ID'),
-    ]
+    precedence = (
+        [
+            ("left", "+", "-"),
+            ("left", "*", "/"),
+        ]
+        + parser.JsonPathParser.precedence
+        + [
+            ("nonassoc", "ID"),
+        ]
+    )
 
 
 def parse(path, debug=False):

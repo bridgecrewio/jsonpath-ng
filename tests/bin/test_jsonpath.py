@@ -1,21 +1,23 @@
 # Use modern Python
-from __future__ import unicode_literals, print_function, absolute_import, division, generators, nested_scopes
+from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals
+
+import io
+import json
+import logging
+import os
+import sys
 
 # Standard library imports
 import unittest
-import logging
-import io
-import sys
-import os
-import json
 
 from bc_jsonpath_ng.bin.jsonpath import main
+
 
 class TestJsonPathScript(unittest.TestCase):
     """
     Tests for the jsonpath.py command line interface.
     """
-    
+
     @classmethod
     def setup_class(cls):
         logging.basicConfig()
@@ -36,21 +38,13 @@ class TestJsonPathScript(unittest.TestCase):
 
     def test_stdin_mode(self):
         # 'format' is a benign Python 2/3 way of ensuring it is a text type rather than binary
-        self.input.write('{0}'.format(json.dumps({
-            'foo': {
-                'baz': 1,
-                'bizzle': {
-                    'baz': 2
-                }
-            }
-        })))
+        self.input.write("{0}".format(json.dumps({"foo": {"baz": 1, "bizzle": {"baz": 2}}})))
         self.input.seek(0)
-        main('jsonpath.py', 'foo..baz')
-        self.assertEqual(self.output.getvalue(), '1\n2\n')
+        main("jsonpath.py", "foo..baz")
+        self.assertEqual(self.output.getvalue(), "1\n2\n")
 
     def test_filename_mode(self):
-        test1 = os.path.join(os.path.dirname(__file__), 'test1.json')
-        test2 = os.path.join(os.path.dirname(__file__), 'test2.json')
-        main('jsonpath.py', 'foo..baz', test1, test2)
-        self.assertEqual(self.output.getvalue(), '1\n2\n3\n4\n')
-
+        test1 = os.path.join(os.path.dirname(__file__), "test1.json")
+        test2 = os.path.join(os.path.dirname(__file__), "test2.json")
+        main("jsonpath.py", "foo..baz", test1, test2)
+        self.assertEqual(self.output.getvalue(), "1\n2\n3\n4\n")

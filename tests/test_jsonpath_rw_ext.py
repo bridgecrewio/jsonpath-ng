@@ -19,10 +19,9 @@ test_bc_jsonpath_ng_ext
 Tests for `bc_jsonpath_ng_ext` module.
 """
 import pytest
-
-from bc_jsonpath_ng import jsonpath  # For setting the global auto_id_field flag
 from oslotest import base
 
+from bc_jsonpath_ng import jsonpath  # For setting the global auto_id_field flag
 from bc_jsonpath_ng.ext import parser
 
 
