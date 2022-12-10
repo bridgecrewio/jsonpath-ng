@@ -1,5 +1,2 @@
-from .jsonpath import *
-from .parser import parse
-
-# Current package version
-__version__ = "1.5.3"
+from .jsonpath import *  # noqa: F401,F403
+from .parser import parse  # noqa: F401

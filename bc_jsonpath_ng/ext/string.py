@@ -15,12 +15,12 @@ import re
 
 from .. import DatumInContext, This
 
-SUB = re.compile("sub\(/(.*)/,\s+(.*)\)")
-SPLIT = re.compile("split\((.),\s+(\d+),\s+(\d+|-1)\)")
-STR = re.compile("str\(\)")
+SUB = re.compile(r"sub\(/(.*)/,\s+(.*)\)")
+SPLIT = re.compile(r"split\((.),\s+(\d+),\s+(\d+|-1)\)")
+STR = re.compile(r"str\(\)")
 
 
-class DefintionInvalid(Exception):
+class DefintionInvalidError(Exception):
     pass
 
 
@@ -33,7 +33,7 @@ class Sub(This):
     def __init__(self, method=None):
         m = SUB.match(method)
         if m is None:
-            raise DefintionInvalid("%s is not valid" % method)
+            raise DefintionInvalidError("%s is not valid" % method)
         self.expr = m.group(1).strip()
         self.repl = m.group(2).strip()
         self.regex = re.compile(self.expr)
@@ -66,7 +66,7 @@ class Split(This):
     def __init__(self, method=None):
         m = SPLIT.match(method)
         if m is None:
-            raise DefintionInvalid("%s is not valid" % method)
+            raise DefintionInvalidError("%s is not valid" % method)
         self.char = m.group(1)
         self.segment = int(m.group(2))
         self.max_split = int(m.group(3))
@@ -99,7 +99,7 @@ class Str(This):
     def __init__(self, method=None):
         m = STR.match(method)
         if m is None:
-            raise DefintionInvalid("%s is not valid" % method)
+            raise DefintionInvalidError("%s is not valid" % method)
         self.method = method
 
     def find(self, datum):

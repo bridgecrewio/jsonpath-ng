@@ -56,7 +56,7 @@ class SortedThis(This):
 
         if isinstance(datum.value, dict) or isinstance(datum.value, list):
             key = functools.cmp_to_key(self._compare) if self.expressions else None
-            return [DatumInContext.wrap([value for value in sorted(datum.value, key=key)])]
+            return [DatumInContext.wrap(sorted(datum.value, key=key))]
         return datum
 
     def __eq__(self, other):

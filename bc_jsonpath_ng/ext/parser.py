@@ -24,26 +24,26 @@ class ExtendedJsonPathLexer(lexer.JsonPathLexer):
     literals = lexer.JsonPathLexer.literals + ["?", "@", "+", "*", "/", "-"]
     tokens = ["BOOL"] + parser.JsonPathLexer.tokens + ["FILTER_OP", "SORT_DIRECTION", "FLOAT"]
 
-    t_FILTER_OP = r"=~|==?|<=|>=|!=|<|>"
+    t_FILTER_OP = r"=~|==?|<=|>=|!=|<|>"  # noqa: N815
 
-    def t_BOOL(self, t):
+    def t_BOOL(self, t):  # noqa: N802
         r"true|false"
         t.value = True if t.value == "true" else False
         return t
 
-    def t_SORT_DIRECTION(self, t):
+    def t_SORT_DIRECTION(self, t):  # noqa: N802
         r",?\s*(/|\\)"
         t.value = t.value[-1]
         return t
 
-    def t_ID(self, t):
+    def t_ID(self, t):  # noqa: N802
         r"@?[a-zA-Z_][a-zA-Z0-9_@\-]*"
         # NOTE(sileht): This fixes the ID expression to be
         # able to use @ for `This` like any json query
         t.type = self.reserved_words.get(t.value, "ID")
         return t
 
-    def t_FLOAT(self, t):
+    def t_FLOAT(self, t):  # noqa: N802
         r"-?\d+\.\d+"
         t.value = float(t.value)
         return t

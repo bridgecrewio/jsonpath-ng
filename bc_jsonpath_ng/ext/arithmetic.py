@@ -32,28 +32,28 @@ class Operation(JSONPath):
     def find(self, datum):
         result = []
         if isinstance(self.left, JSONPath) and isinstance(self.right, JSONPath):
-            left = self.left.find(datum)
-            right = self.right.find(datum)
-            if left and right and len(left) == len(right):
-                for l, r in zip(left, right):
+            left_results = self.left.find(datum)
+            right_results = self.right.find(datum)
+            if left_results and right_results and len(left_results) == len(right_results):
+                for left, right in zip(left_results, right_results):
                     try:
-                        result.append(self.op(l.value, r.value))
+                        result.append(self.op(left.value, right.value))
                     except TypeError:
                         return []
             else:
                 return []
         elif isinstance(self.left, JSONPath):
-            left = self.left.find(datum)
-            for l in left:
+            left_results = self.left.find(datum)
+            for left in left_results:
                 try:
-                    result.append(self.op(l.value, self.right))
+                    result.append(self.op(left.value, self.right))
                 except TypeError:
                     return []
         elif isinstance(self.right, JSONPath):
-            right = self.right.find(datum)
-            for r in right:
+            right_results = self.right.find(datum)
+            for right in right_results:
                 try:
-                    result.append(self.op(self.left, r.value))
+                    result.append(self.op(self.left, right.value))
                 except TypeError:
                     return []
         else:

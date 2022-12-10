@@ -12,4 +12,4 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from .parser import parse
+from .parser import parse  # noqa: F401

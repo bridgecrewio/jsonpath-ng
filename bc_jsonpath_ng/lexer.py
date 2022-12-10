@@ -17,7 +17,7 @@ class JsonPathLexer(object):
 
     def __init__(self, debug=False):
         self.debug = debug
-        if self.__doc__ == None:
+        if self.__doc__ is None:
             raise JsonPathLexerError(
                 "Docstrings have been removed! By design of PLY, jsonpath-rw requires docstrings. You must not use PYTHONOPTIMIZE=2 or python -OO."
             )
@@ -59,15 +59,15 @@ class JsonPathLexer(object):
     states = [("singlequote", "exclusive"), ("doublequote", "exclusive"), ("backquote", "exclusive")]
 
     # Normal lexing, rather easy
-    t_DOUBLEDOT = r"\.\."
+    t_DOUBLEDOT = r"\.\."  # noqa: N815
     t_ignore = " \t"
 
-    def t_ID(self, t):
+    def t_ID(self, t):  # noqa: N802
         r"[a-zA-Z_@][a-zA-Z0-9_@\-]*"
         t.type = self.reserved_words.get(t.value, "ID")
         return t
 
-    def t_NUMBER(self, t):
+    def t_NUMBER(self, t):  # noqa: N802
         r"-?\d+"
         t.value = int(t.value)
         return t

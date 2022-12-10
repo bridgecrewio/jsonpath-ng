@@ -1,12 +1,13 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function
+from __future__ import absolute_import, division, generators, nested_scopes
 
+import logging
 import os.path
 import sys
 
 import ply.yacc
 
+from bc_jsonpath_ng import Child, Descendants, Fields, Index, Intersect, Parent, Root, Slice, This, Union, Where
 from bc_jsonpath_ng.exceptions import JsonPathParserError
-from bc_jsonpath_ng.jsonpath import *
 from bc_jsonpath_ng.lexer import JsonPathLexer
 
 logger = logging.getLogger(__name__)
@@ -45,7 +46,7 @@ class JsonPathParser(object):
         output_directory = os.path.dirname(__file__)
         try:
             module_name = os.path.splitext(os.path.split(__file__)[1])[0]
-        except:
+        except Exception:
             module_name = __name__
 
         parsing_table_module = "_".join([module_name, start_symbol, "parsetab"])

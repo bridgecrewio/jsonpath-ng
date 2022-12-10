@@ -1,9 +1,13 @@
+# test
 oslotest
 pytest
-flake8
 coverage
 coveralls
 pytest-cov
 
 # lint
 pre-commit
+bandit
+black
+flake8
+isort

@@ -56,8 +56,8 @@ class Filter(JSONPath):
     def update(self, data, val):
         if type(data) is list:
             for index, item in enumerate(data):
-                shouldUpdate = len(self.expressions) == len(list(filter(lambda x: x.find(item), self.expressions)))
-                if shouldUpdate:
+                should_update = len(self.expressions) == len(list(filter(lambda x: x.find(item), self.expressions)))
+                if should_update:
                     if hasattr(val, "__call__"):
                         val.__call__(data[index], data, index)
                     else:
