@@ -149,17 +149,17 @@ from bc_jsonpath_ng.ext import parser
             2,
         ),
         (
-            "objects[\cat]",
+            r"objects[\cat]",
             {"objects": [{"cat": 2}, {"cat": 1}, {"cat": 3}]},
             [[{"cat": 3}, {"cat": 2}, {"cat": 1}]],
         ),
         (
-            "objects[\cat][-1].cat",
+            r"objects[\cat][-1].cat",
             {"objects": [{"cat": 2}, {"cat": 1}, {"cat": 3}]},
             1,
         ),
         (
-            "objects[/cow,\cat]",
+            r"objects[/cow,\cat]",
             {
                 "objects": [
                     {"cat": 1, "cow": 2},
@@ -178,7 +178,7 @@ from bc_jsonpath_ng.ext import parser
             ],
         ),
         (
-            "objects[/cow,\cat][0].cat",
+            r"objects[/cow,\cat][0].cat",
             {
                 "objects": [
                     {"cat": 1, "cow": 2},
