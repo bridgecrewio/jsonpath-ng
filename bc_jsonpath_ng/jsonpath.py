@@ -521,11 +521,16 @@ class Intersect(JSONPath):
         self.left = left
         self.right = right
 
-    def is_singular(self):
+    def is_singular(self) -> bool:
         return False
 
-    def find(self, data):
-        raise NotImplementedError()
+    def find(self, data: dict[str, Any]) -> list[DatumInContext]:
+        found_matches = []
+        for expression in self.left:
+            found_matches.extend(expression.find(data))
+        for expression in self.right:
+            found_matches.extend(expression.find(data))
+        return found_matches
 
 
 class Fields(JSONPath):
