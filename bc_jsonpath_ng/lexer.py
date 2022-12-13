@@ -54,12 +54,14 @@ class JsonPathLexer(object):
 
     reserved_words = {"where": "WHERE"}
 
-    tokens = ["DOUBLEDOT", "NUMBER", "ID", "NAMED_OPERATOR"] + list(reserved_words.values())
+    tokens = ["DOUBLEDOT", "DOUBLE_AND", "DOUBLE_OR", "NUMBER", "ID", "NAMED_OPERATOR"] + list(reserved_words.values())
 
     states = [("singlequote", "exclusive"), ("doublequote", "exclusive"), ("backquote", "exclusive")]
 
     # Normal lexing, rather easy
     t_DOUBLEDOT = r"\.\."  # noqa: N815
+    t_DOUBLE_AND = "&&"  # noqa: N815
+    t_DOUBLE_OR = r"\|\|"  # noqa: N815
     t_ignore = " \t"
 
     def t_ID(self, t):  # noqa: N802

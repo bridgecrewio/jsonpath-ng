@@ -117,6 +117,55 @@ from bc_jsonpath_ng.ext import parser
             [{"cow": 8, "cat": 2}, {"cow": 7, "cat": 2}],
         ),
         (
+            "objects[?cow>5&&cat=2]",
+            {
+                "objects": [
+                    {"cow": 8, "cat": 2},
+                    {"cow": 7, "cat": 2},
+                    {"cow": 2, "cat": 2},
+                    {"cow": 5, "cat": 3},
+                    {"cow": 8, "cat": 3},
+                ]
+            },
+            [{"cow": 8, "cat": 2}, {"cow": 7, "cat": 2}],
+        ),
+        (
+            "objects[?cow>5|cat=2]",
+            {
+                "objects": [
+                    {"cow": 8, "cat": 2},
+                    {"cow": 7, "cat": 2},
+                    {"cow": 2, "cat": 2},
+                    {"cow": 5, "cat": 3},
+                    {"cow": 8, "cat": 3},
+                ]
+            },
+            [
+                {"cow": 8, "cat": 2},
+                {"cow": 7, "cat": 2},
+                {"cow": 2, "cat": 2},
+                {"cow": 8, "cat": 3},
+            ],
+        ),
+        (
+            "objects[?cow>5||cat=2]",
+            {
+                "objects": [
+                    {"cow": 8, "cat": 2},
+                    {"cow": 7, "cat": 2},
+                    {"cow": 2, "cat": 2},
+                    {"cow": 5, "cat": 3},
+                    {"cow": 8, "cat": 3},
+                ]
+            },
+            [
+                {"cow": 8, "cat": 2},
+                {"cow": 7, "cat": 2},
+                {"cow": 2, "cat": 2},
+                {"cow": 8, "cat": 3},
+            ],
+        ),
+        (
             "objects[?confidence>=0.5].prediction",
             {
                 "objects": [
@@ -482,6 +531,9 @@ from bc_jsonpath_ng.ext import parser
         "filter_eq3",
         "filter_gt",
         "filter_and",
+        "filter_double_and",
+        "filter_or",
+        "filter_double_or",
         "filter_float_gt",
         "sort1",
         "sort1_indexed",

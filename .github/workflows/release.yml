@@ -33,7 +33,7 @@ jobs:
         run: pytest -s -v --capture sys --cov bc_jsonpath_ng --cov-report term-missing
   bump-version:
     needs: tests
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, public, linux, x64]
     environment: release
     permissions:
       contents: write
@@ -44,7 +44,7 @@ jobs:
       - name: bump version
         id: version
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # TODO: change to PAT_TOKEN after moving to self hosted runners
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
@@ -74,3 +74,40 @@ jobs:
       - name: sleep and wait for package to refresh
         run: |
           sleep 2m
+
+  create-pr:
+    needs: bump-version
+    runs-on: [self-hosted, public, linux, x64]
+    environment: release
+    steps:
+      - name: Checkout checkov
+        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8  # v3
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+          repository: bridgecrewio/checkov
+      - uses: actions/setup-python@2c3dd9e7e29afd70cc0950079bde6c979d1f69f9  # v4
+        with:
+          python-version: ${{ env.MIN_PYTHON_VERSION }}
+      - name: Prepare PR
+        run: |
+          # install needed tools
+          python -m pip install --no-cache-dir --upgrade pipenv "pipenv-setup[black]" "vistir<0.7.0"
+
+          # update Pipfile
+          pipenv --python ${{ env.PYTHON_VERSION }}
+          pipenv install bc-jsonpath-ng==${{ needs.bump-version.outputs.version }}
+          pipenv lock
+
+          # update setup.py
+          pipenv-setup sync --pipfile
+      - name: Create PR
+        uses: peter-evans/create-pull-request@2b011faafdcbc9ceb11414d64d0573f37c774b04  # v4
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+          branch: update-jsonpath-ng-dep
+          delete-branch: true
+          commit-message: update bc-jsonpath-ng version
+          title: "chore: update bc-jsonpath-ng version to ${{ needs.bump-version.outputs.version }}"
+          body: |
+            - Automatic update of bc-jsonpath-ng
+            powered by [create-pull-request](https://github.com/peter-evans/create-pull-request) GHA

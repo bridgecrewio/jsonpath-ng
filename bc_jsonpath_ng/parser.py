@@ -74,7 +74,9 @@ class JsonPathParser(object):
         ("left", ","),
         ("left", "DOUBLEDOT"),
         ("left", "."),
+        ("left", "DOUBLE_OR"),
         ("left", "|"),
+        ("left", "DOUBLE_AND"),
         ("left", "&"),
         ("left", "WHERE"),
     ]
@@ -87,7 +89,10 @@ class JsonPathParser(object):
         | jsonpath DOUBLEDOT jsonpath
         | jsonpath WHERE jsonpath
         | jsonpath '|' jsonpath
-        | jsonpath '&' jsonpath"""
+        | jsonpath DOUBLE_OR jsonpath
+        | jsonpath '&' jsonpath
+        | jsonpath DOUBLE_AND jsonpath
+        """
         op = p[2]
 
         if op == ".":
@@ -96,9 +101,9 @@ class JsonPathParser(object):
             p[0] = Descendants(p[1], p[3])
         elif op == "where":
             p[0] = Where(p[1], p[3])
-        elif op == "|":
+        elif op in ("|", "||"):
             p[0] = Union(p[1], p[3])
-        elif op == "&":
+        elif op in ("&", "&&"):
             p[0] = Intersect(p[1], p[3])
 
     def p_jsonpath_fields(self, p):

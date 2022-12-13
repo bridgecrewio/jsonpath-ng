@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from .. import Child, Fields, This, lexer, parser
+from .. import Child, Fields, Intersect, This, lexer, parser
 from . import arithmetic as _arithmetic
 from . import filter as _filter
 from . import iterable as _iterable
@@ -125,9 +125,16 @@ class ExtentedJsonPathParser(parser.JsonPathParser):
         p[0] = [p[1]]
 
     def p_expressions_and(self, p):
-        "expressions : expressions '&' expressions"
-        # TODO(sileht): implements '|'
+        """expressions : expressions '&' expressions
+        | expressions DOUBLE_AND expressions
+        """
         p[0] = p[1] + p[3]
+
+    def p_expressions_or(self, p):
+        """expressions : expressions '|' expressions
+        | expressions DOUBLE_OR expressions
+        """
+        p[0] = [Intersect(p[1], p[3])]
 
     def p_expressions_parens(self, p):
         "expressions : '(' expressions ')'"
