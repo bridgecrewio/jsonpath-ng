@@ -98,7 +98,7 @@ jobs:
           python -m pip install --no-cache-dir --upgrade pipenv "pipenv-setup[black]" "vistir<0.7.0"
 
           # update Pipfile
-          pipenv --python ${{ env.PYTHON_VERSION }}
+          pipenv --python ${{ env.MIN_PYTHON_VERSION }}
           pipenv install bc-jsonpath-ng==${{ needs.bump-version.outputs.version }}
           pipenv lock
 
