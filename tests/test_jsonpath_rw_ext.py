@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
 # a copy of the License at
@@ -583,6 +581,76 @@ from bc_jsonpath_ng.ext import parser
     ],
 )
 def test_jsonpath_ext(query, data, expected):
+    run_test(query, data, expected)
+
+
+# the upper test became way too long, therefore split into 2
+@pytest.mark.parametrize(
+    "query,data,expected",
+    [
+        (
+            "objects[?(@.cow contains 'muu')]",
+            {
+                "objects": [
+                    {"cow": ["muu", "muuu"]},
+                    {"cow": ["muu"]},
+                    {"cat": ["miau", "muu"]},
+                    {"cow": ["mu", "muuu"]},
+                ]
+            },
+            [{"cow": ["muu", "muuu"]}, {"cow": ["muu"]}],
+        ),
+        (
+            "objects[?(!@.cow contains 'muu')]",
+            {
+                "objects": [
+                    {"cow": ["muu", "muuu"]},
+                    {"cow": ["muu"]},
+                    {"cat": ["miau", "muu"]},
+                    {"cow": ["mu", "muuu"]},
+                ]
+            },
+            [{"cat": ["miau", "muu"]}, {"cow": ["mu", "muuu"]}],
+        ),
+        (
+            "objects[?(!@.cow)]",
+            {
+                "objects": [
+                    {"cow": ["muu"]},
+                    {"cat": ["miau"]},
+                ]
+            },
+            [{"cat": ["miau"]}],
+        ),
+    ],
+    ids=[
+        "contains",
+        "not-contains",
+        "not-cow",
+    ],
+)
+def test_jsonpath_ext(query, data, expected):
+    run_test(query, data, expected)
+
+
+def test_jsonpath_ext_single():
+    """This just used for easier debugging"""
+
+    query = "objects[?(!@.cow contains 'muu')]"
+    data = {
+        "objects": [
+            {"cow": ["muu", "muuu"]},
+            {"cow": ["muu"]},
+            {"cat": ["miau", "muu"]},
+            {"cow": ["mu", "muuu"]},
+        ]
+    }
+    expected = [{"cat": ["miau", "muu"]}, {"cow": ["mu", "muuu"]}]
+
+    run_test(query, data, expected)
+
+
+def run_test(query, data, expected):
     jsonpath.auto_id_field = None
     result = parser.parse(query, debug=True).find(data)
     if isinstance(expected, list):
@@ -609,12 +677,11 @@ class TestJsonPath(base.BaseTestCase):
         # Also, we coerce iterables, etc, into the desired target type
 
         for string, data, target in test_cases:
-            print('parse("%s").find(%s) =?= %s' % (string, data, target))
             result = parser.parse(string).find(data)
             if isinstance(target, list):
                 assert [r.value for r in result] == target
             elif isinstance(target, set):
-                assert set([r.value for r in result]) == target
+                assert {r.value for r in result} == target
             else:
                 assert result.value == target
 
@@ -625,12 +692,12 @@ class TestJsonPath(base.BaseTestCase):
                 ("foo", {"foo": "baz"}, ["baz"]),
                 ("foo,baz", {"foo": 1, "baz": 2}, [1, 2]),
                 ("@foo", {"@foo": 1}, [1]),
-                ("*", {"foo": 1, "baz": 2}, set([1, 2])),
+                ("*", {"foo": 1, "baz": 2}, {1, 2}),
             ]
         )
 
         jsonpath.auto_id_field = "id"
-        self.check_cases([("*", {"foo": 1, "baz": 2}, set([1, 2, "`this`"]))])
+        self.check_cases([("*", {"foo": 1, "baz": 2}, {1, 2, "`this`"})])
 
     def test_root_value(self):
         jsonpath.auto_id_field = None
@@ -735,12 +802,11 @@ class TestJsonPath(base.BaseTestCase):
         # Also, we coerce iterables, etc, into the desired target type
 
         for string, data, target in test_cases:
-            print('parse("%s").find(%s).paths =?= %s' % (string, data, target))
             result = parser.parse(string).find(data)
             if isinstance(target, list):
                 assert [str(r.full_path) for r in result] == target
             elif isinstance(target, set):
-                assert set([str(r.full_path) for r in result]) == target
+                assert {str(r.full_path) for r in result} == target
             else:
                 assert str(result.path) == target
 
@@ -750,12 +816,12 @@ class TestJsonPath(base.BaseTestCase):
             [
                 ("foo", {"foo": "baz"}, ["foo"]),
                 ("foo,baz", {"foo": 1, "baz": 2}, ["foo", "baz"]),
-                ("*", {"foo": 1, "baz": 2}, set(["foo", "baz"])),
+                ("*", {"foo": 1, "baz": 2}, {"foo", "baz"}),
             ]
         )
 
         jsonpath.auto_id_field = "id"
-        self.check_paths([("*", {"foo": 1, "baz": 2}, set(["foo", "baz", "id"]))])
+        self.check_paths([("*", {"foo": 1, "baz": 2}, {"foo", "baz", "id"})])
 
     def test_root_paths(self):
         jsonpath.auto_id_field = None
@@ -818,7 +884,7 @@ class TestJsonPath(base.BaseTestCase):
                 ("foo.id", {"foo": "baz"}, ["foo"]),
                 ("foo.id", {"foo": {"id": "baz"}}, ["baz"]),
                 ("foo,baz.id", {"foo": 1, "baz": 2}, ["foo", "baz"]),
-                ("*.id", {"foo": {"id": 1}, "baz": 2}, set(["1", "baz"])),
+                ("*.id", {"foo": {"id": 1}, "baz": 2}, {"1", "baz"}),
             ]
         )
 

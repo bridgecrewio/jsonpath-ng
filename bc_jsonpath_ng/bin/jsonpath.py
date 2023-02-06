@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# encoding: utf-8
 # Copyright © 2012 Felix Richter <wtfpl@syntax-fehler.de>
 # This work is free. You can redistribute it and/or modify it under the
 # terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -24,7 +23,7 @@ def find_matches_for_file(expr, f):
 
 
 def print_matches(matches):
-    print("\n".join(["{0}".format(match.value) for match in matches]))
+    print("\n".join([f"{match.value}" for match in matches]))  # noqa: T201
 
 
 def main(*argv):

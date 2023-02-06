@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals
-
 import logging
 import unittest
 
@@ -11,7 +9,7 @@ from bc_jsonpath_ng.lexer import JsonPathLexer, JsonPathLexerError
 class TestLexer(unittest.TestCase):
     def token(self, value, ty=None):
         t = LexToken()
-        t.type = ty if ty != None else value
+        t.type = ty if ty is not None else value
         t.value = value
         t.lineno = -1
         t.lexpos = -1
@@ -19,12 +17,11 @@ class TestLexer(unittest.TestCase):
 
     def assert_lex_equiv(self, s, stream2):
         # NOTE: lexer fails to reset after call?
-        l = JsonPathLexer(debug=True)
-        stream1 = list(l.tokenize(s))  # Save the stream for debug output when a test fails
+        lexer = JsonPathLexer(debug=True)
+        stream1 = list(lexer.tokenize(s))  # Save the stream for debug output when a test fails
         stream2 = list(stream2)
         assert len(stream1) == len(stream2)
         for token1, token2 in zip(stream1, stream2):
-            print(token1, token2)
             assert token1.type == token2.type
             assert token1.value == token2.value
 

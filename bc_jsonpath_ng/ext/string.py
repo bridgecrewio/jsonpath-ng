@@ -51,10 +51,10 @@ class Sub(This):
         return isinstance(other, Sub) and self.method == other.method
 
     def __repr__(self):
-        return "%s(%r)" % (self.__class__.__name__, self.method)
+        return f"{self.__class__.__name__}({self.method!r})"
 
     def __str__(self):
-        return "`sub(/%s/, %s)`" % (self.expr, self.repl)
+        return f"`sub(/{self.expr}/, {self.repl})`"
 
 
 class Split(This):
@@ -84,7 +84,7 @@ class Split(This):
         return isinstance(other, Split) and self.method == other.method
 
     def __repr__(self):
-        return "%s(%r)" % (self.__class__.__name__, self.method)
+        return f"{self.__class__.__name__}({self.method!r})"
 
     def __str__(self):
         return "`%s`" % self.method
@@ -111,7 +111,7 @@ class Str(This):
         return isinstance(other, Str) and self.method == other.method
 
     def __repr__(self):
-        return "%s(%r)" % (self.__class__.__name__, self.method)
+        return f"{self.__class__.__name__}({self.method!r})"
 
     def __str__(self):
         return "`str()`"

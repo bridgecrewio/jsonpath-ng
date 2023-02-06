@@ -27,14 +27,14 @@ if TYPE_CHECKING:
 class ExtendedJsonPathLexer(lexer.JsonPathLexer):
     """Custom LALR-lexer for JsonPath"""
 
-    literals = lexer.JsonPathLexer.literals + ["?", "@", "+", "*", "/", "-"]
-    tokens = ["BOOL"] + parser.JsonPathLexer.tokens + ["FILTER_OP", "SORT_DIRECTION", "FLOAT"]
+    literals = [*lexer.JsonPathLexer.literals, "?", "@", "+", "*", "/", "-", "!"]
+    tokens = ["BOOL", *parser.JsonPathLexer.tokens] + ["FILTER_OP", "SORT_DIRECTION", "FLOAT"]
 
     t_FILTER_OP = r"=~|==?|<=|>=|!=|<|>"  # noqa: N815
 
     def t_BOOL(self, t):  # noqa: N802
         r"true|false"
-        t.value = True if t.value == "true" else False
+        t.value = t.value == "true"
         return t
 
     def t_SORT_DIRECTION(self, t):  # noqa: N802
@@ -62,7 +62,7 @@ class ExtentedJsonPathParser(parser.JsonPathParser):
 
     def __init__(self, debug=False, lexer_class=None):
         lexer_class = lexer_class or ExtendedJsonPathLexer
-        super(ExtentedJsonPathParser, self).__init__(debug, lexer_class)
+        super().__init__(debug, lexer_class)
 
     def p_jsonpath_operator_jsonpath(self, p):
         """jsonpath : NUMBER operator NUMBER
@@ -105,7 +105,7 @@ class ExtentedJsonPathParser(parser.JsonPathParser):
         elif p[1].startswith("str("):
             p[0] = _string.Str(p[1])
         else:
-            super(ExtentedJsonPathParser, self).p_jsonpath_named_operator(p)
+            super().p_jsonpath_named_operator(p)
 
     def p_expression(self, p):
         """expression : jsonpath
@@ -169,16 +169,13 @@ class ExtentedJsonPathParser(parser.JsonPathParser):
         "jsonpath : '@'"
         p[0] = This()
 
-    precedence = (
-        [
-            ("left", "+", "-"),
-            ("left", "*", "/"),
-        ]
-        + parser.JsonPathParser.precedence
-        + [
-            ("nonassoc", "ID"),
-        ]
-    )
+    def p_jsonpath_negate(self, p):
+        "jsonpath : '!' expressions"
+        p[0] = _filter.Negate(p[2])
+
+    precedence = [("left", "+", "-"), ("left", "*", "/"), *parser.JsonPathParser.precedence] + [
+        ("nonassoc", "ID"),
+    ]
 
 
 def parse(path: str, debug: bool = False) -> JSONPath:

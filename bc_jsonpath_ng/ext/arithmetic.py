@@ -64,7 +64,7 @@ class Operation(JSONPath):
         return [DatumInContext.wrap(r) for r in result]
 
     def __repr__(self):
-        return "%s(%r%s%r)" % (self.__class__.__name__, self.left, self.op, self.right)
+        return f"{self.__class__.__name__}({self.left!r}{self.op}{self.right!r})"
 
     def __str__(self):
-        return "%s%s%s" % (self.left, self.op, self.right)
+        return f"{self.left}{self.op}{self.right}"

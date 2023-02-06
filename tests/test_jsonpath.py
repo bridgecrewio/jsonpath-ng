@@ -1,9 +1,8 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals
-
+import logging
 import unittest
 
 from bc_jsonpath_ng import jsonpath  # For setting the global auto_id_field flag
-from bc_jsonpath_ng.jsonpath import *
+from bc_jsonpath_ng.jsonpath import DatumInContext, Fields, Root, This
 from bc_jsonpath_ng.lexer import JsonPathLexerError
 from bc_jsonpath_ng.parser import parse
 
@@ -17,7 +16,7 @@ class TestDatumInContext(unittest.TestCase):
     def setup_class(cls):
         logging.basicConfig()
 
-    def test_DatumInContext_init(self):
+    def test_DatumInContext_init(self):  # noqa: N802
 
         test_datum1 = DatumInContext(3)
         assert test_datum1.path == This()
@@ -97,12 +96,11 @@ class TestJsonPath(unittest.TestCase):
         # Also, we coerce iterables, etc, into the desired target type
 
         for string, data, target in test_cases:
-            print('parse("%s").find(%s) =?= %s' % (string, data, target))
             result = parse(string).find(data)
             if isinstance(target, list):
                 assert [r.value for r in result] == target
             elif isinstance(target, set):
-                assert set([r.value for r in result]) == target
+                assert {r.value for r in result} == target
             else:
                 assert result.value == target
 
@@ -113,12 +111,12 @@ class TestJsonPath(unittest.TestCase):
                 ("foo", {"foo": "baz"}, ["baz"]),
                 ("foo,baz", {"foo": 1, "baz": 2}, [1, 2]),
                 ("@foo", {"@foo": 1}, [1]),
-                ("*", {"foo": 1, "baz": 2}, set([1, 2])),
+                ("*", {"foo": 1, "baz": 2}, {1, 2}),
             ]
         )
 
         jsonpath.auto_id_field = "id"
-        self.check_cases([("*", {"foo": 1, "baz": 2}, set([1, 2, "`this`"]))])
+        self.check_cases([("*", {"foo": 1, "baz": 2}, {1, 2, "`this`"})])
 
     def test_root_value(self):
         jsonpath.auto_id_field = None
@@ -206,12 +204,11 @@ class TestJsonPath(unittest.TestCase):
         # Also, we coerce iterables, etc, into the desired target type
 
         for string, data, target in test_cases:
-            print('parse("%s").find(%s).paths =?= %s' % (string, data, target))
             result = parse(string).find(data)
             if isinstance(target, list):
                 assert [str(r.full_path) for r in result] == target
             elif isinstance(target, set):
-                assert set([str(r.full_path) for r in result]) == target
+                assert {str(r.full_path) for r in result} == target
             else:
                 assert str(result.path) == target
 
@@ -221,12 +218,12 @@ class TestJsonPath(unittest.TestCase):
             [
                 ("foo", {"foo": "baz"}, ["foo"]),
                 ("foo,baz", {"foo": 1, "baz": 2}, ["foo", "baz"]),
-                ("*", {"foo": 1, "baz": 2}, set(["foo", "baz"])),
+                ("*", {"foo": 1, "baz": 2}, {"foo", "baz"}),
             ]
         )
 
         jsonpath.auto_id_field = "id"
-        self.check_paths([("*", {"foo": 1, "baz": 2}, set(["foo", "baz", "id"]))])
+        self.check_paths([("*", {"foo": 1, "baz": 2}, {"foo", "baz", "id"})])
 
     def test_root_paths(self):
         jsonpath.auto_id_field = None
@@ -276,7 +273,7 @@ class TestJsonPath(unittest.TestCase):
                 ("foo.id", {"foo": "baz"}, ["foo"]),
                 ("foo.id", {"foo": {"id": "baz"}}, ["baz"]),
                 ("foo,baz.id", {"foo": 1, "baz": 2}, ["foo", "baz"]),
-                ("*.id", {"foo": {"id": 1}, "baz": 2}, set(["1", "baz"])),
+                ("*.id", {"foo": {"id": 1}, "baz": 2}, {"1", "baz"}),
             ]
         )
 
@@ -328,7 +325,6 @@ class TestJsonPath(unittest.TestCase):
 
     def check_update_cases(self, test_cases):
         for original, expr_str, value, expected in test_cases:
-            print("parse(%r).update(%r, %r) =?= %r" % (expr_str, original, value, expected))
             expr = parse(expr_str)
             actual = expr.update(original, value)
             assert actual == expected
