@@ -11,8 +11,6 @@ env:
 jobs:
   pre-commit:
     uses: bridgecrewio/gha-reusable-workflows/.github/workflows/pre-commit.yaml@main
-    with:
-      python-version: ${{ env.MIN_PYTHON_VERSION }}
 
   tests:
     needs: pre-commit
