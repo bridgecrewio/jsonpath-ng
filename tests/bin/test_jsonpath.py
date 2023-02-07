@@ -1,5 +1,4 @@
 # Use modern Python
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals
 
 import io
 import json
@@ -38,7 +37,7 @@ class TestJsonPathScript(unittest.TestCase):
 
     def test_stdin_mode(self):
         # 'format' is a benign Python 2/3 way of ensuring it is a text type rather than binary
-        self.input.write("{0}".format(json.dumps({"foo": {"baz": 1, "bizzle": {"baz": 2}}})))
+        self.input.write("{}".format(json.dumps({"foo": {"baz": 1, "bizzle": {"baz": 2}}})))
         self.input.seek(0)
         main("jsonpath.py", "foo..baz")
         self.assertEqual(self.output.getvalue(), "1\n2\n")

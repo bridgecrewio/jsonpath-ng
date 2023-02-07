@@ -63,7 +63,7 @@ class SortedThis(This):
         return isinstance(other, Len)
 
     def __repr__(self):
-        return "%s(%r)" % (self.__class__.__name__, self.expressions)
+        return f"{self.__class__.__name__}({self.expressions!r})"
 
     def __str__(self):
         return "[?%s]" % self.expressions

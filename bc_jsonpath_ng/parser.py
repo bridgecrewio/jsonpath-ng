@@ -7,7 +7,20 @@ from typing import TYPE_CHECKING
 
 import ply.yacc
 
-from bc_jsonpath_ng import Child, Descendants, Fields, Index, Intersect, Parent, Root, Slice, This, Union, Where
+from bc_jsonpath_ng import (
+    Child,
+    Contains,
+    Descendants,
+    Fields,
+    Index,
+    Intersect,
+    Parent,
+    Root,
+    Slice,
+    This,
+    Union,
+    Where,
+)
 from bc_jsonpath_ng.exceptions import JsonPathParserError
 from bc_jsonpath_ng.lexer import JsonPathLexer
 
@@ -21,7 +34,7 @@ def parse(string: str):
     return JsonPathParser().parse(string)
 
 
-class JsonPathParser(object):
+class JsonPathParser:
     """
     An LALR-parser for JsonPath
     """
@@ -79,10 +92,11 @@ class JsonPathParser(object):
         ("left", "DOUBLE_AND"),
         ("left", "&"),
         ("left", "WHERE"),
+        ("left", "CONTAINS"),
     ]
 
     def p_error(self, t):
-        raise JsonPathParserError("Parse error at %s:%s near token %s (%s)" % (t.lineno, t.col, t.value, t.type))
+        raise JsonPathParserError(f"Parse error at {t.lineno}:{t.col} near token {t.value} ({t.type})")
 
     def p_jsonpath_binop(self, p):
         """jsonpath : jsonpath '.' jsonpath
@@ -92,6 +106,7 @@ class JsonPathParser(object):
         | jsonpath DOUBLE_OR jsonpath
         | jsonpath '&' jsonpath
         | jsonpath DOUBLE_AND jsonpath
+        | jsonpath CONTAINS jsonpath
         """
         op = p[2]
 
@@ -105,6 +120,8 @@ class JsonPathParser(object):
             p[0] = Union(p[1], p[3])
         elif op in ("&", "&&"):
             p[0] = Intersect(p[1], p[3])
+        elif op == "contains":
+            p[0] = Contains(p[1], p[3])
 
     def p_jsonpath_fields(self, p):
         "jsonpath : fields_or_any"
@@ -117,7 +134,7 @@ class JsonPathParser(object):
         elif p[1] == "parent":
             p[0] = Parent()
         else:
-            raise JsonPathParserError("Unknown named operator `%s` at %s:%s" % (p[1], p.lineno(1), p.lexpos(1)))
+            raise JsonPathParserError(f"Unknown named operator `{p[1]}` at {p.lineno(1)}:{p.lexpos(1)}")
 
     def p_jsonpath_root(self, p):
         "jsonpath : '$'"
@@ -190,7 +207,7 @@ class JsonPathParser(object):
         p[0] = None
 
 
-class IteratorToTokenStream(object):
+class IteratorToTokenStream:
     def __init__(self, iterator):
         self.iterator = iterator
 
@@ -204,4 +221,4 @@ class IteratorToTokenStream(object):
 if __name__ == "__main__":
     logging.basicConfig()
     parser = JsonPathParser(debug=True)
-    print(parser.parse(sys.stdin.read()))
+    print(parser.parse(sys.stdin.read()))  # noqa: T201

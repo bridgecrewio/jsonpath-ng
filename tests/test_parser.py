@@ -1,8 +1,7 @@
-from __future__ import absolute_import, division, generators, nested_scopes, print_function, unicode_literals
-
+import logging
 import unittest
 
-from bc_jsonpath_ng.jsonpath import *
+from bc_jsonpath_ng.jsonpath import Child, Descendants, Fields, Index, Slice, Where
 from bc_jsonpath_ng.lexer import JsonPathLexer
 from bc_jsonpath_ng.parser import JsonPathParser
 
@@ -20,7 +19,6 @@ class TestParser(unittest.TestCase):
         )  # Note that just manually passing token streams avoids this dep, but that sucks
 
         for string, parsed in test_cases:
-            print(string, "=?=", parsed)  # pytest captures this and we see it only on a failure, for debugging
             assert parser.parse(string) == parsed
 
     def test_atomic(self):

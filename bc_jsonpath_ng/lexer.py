@@ -10,7 +10,7 @@ from bc_jsonpath_ng.exceptions import JsonPathLexerError
 logger = logging.getLogger(__name__)
 
 
-class JsonPathLexer(object):
+class JsonPathLexer:
     """
     A Lexical analyzer for JsonPath.
     """
@@ -52,9 +52,9 @@ class JsonPathLexer(object):
 
     literals = ["*", ".", "[", "]", "(", ")", "$", ",", ":", "|", "&", "~"]
 
-    reserved_words = {"where": "WHERE"}
+    reserved_words = {"where": "WHERE", "contains": "CONTAINS"}
 
-    tokens = ["DOUBLEDOT", "DOUBLE_AND", "DOUBLE_OR", "NUMBER", "ID", "NAMED_OPERATOR"] + list(reserved_words.values())
+    tokens = ["DOUBLEDOT", "DOUBLE_AND", "DOUBLE_OR", "NUMBER", "ID", "NAMED_OPERATOR", *list(reserved_words.values())]
 
     states = [("singlequote", "exclusive"), ("doublequote", "exclusive"), ("backquote", "exclusive")]
 
@@ -183,5 +183,5 @@ class JsonPathLexer(object):
 if __name__ == "__main__":
     logging.basicConfig()
     lexer = JsonPathLexer(debug=True)
-    for token in lexer.tokenize(sys.stdin.read()):
-        print("%-20s%s" % (token.value, token.type))
+    for _token in lexer.tokenize(sys.stdin.read()):
+        print("%-20s%s" % (_token.value, _token.type))  # noqa: T201

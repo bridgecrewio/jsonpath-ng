@@ -1,9 +1,32 @@
-[tool.bandit]
-recursive = true
-
 [tool.black]
 line-length = 120
 
-[tool.isort]
-profile = "black"
-line_length = 120
+[tool.ruff]
+line-length = 120
+
+select = [
+    "A",
+    "ARG",
+    "B",
+    "C4",
+    "E",
+    "F",
+    "I",
+    "N",
+    "PGH",
+    "RUF",
+    "S",
+    "SIM",
+    "T10",
+    "T20",
+    "UP",
+    "W",
+    "YTT",
+]
+exclude = [
+    "tests"  # exclude for now
+]
+ignore = ["ARG002", "E501"]
+per-file-ignores = { "tests/**/*" = ["S101"] }
+
+target-version = "py37"

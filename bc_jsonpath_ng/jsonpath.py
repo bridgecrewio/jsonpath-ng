@@ -14,7 +14,7 @@ NOT_SET = object()
 LIST_KEY = object()
 
 
-class JSONPath(object):
+class JSONPath:
     """
     The base class for JSONPath abstract syntax; those
     methods stubbed here are the interface to supported
@@ -43,7 +43,7 @@ class JSONPath(object):
     def update_or_create(self, data, val):
         return self.update(data, val)
 
-    def filter(self, fn, data):
+    def filter(self, fn, data):  # noqa: A003
         """
         Returns `data` with the specified path filtering nodes according
         the filter evaluation result returned by the filter function.
@@ -60,7 +60,7 @@ class JSONPath(object):
         """
         Equivalent to Child(self, next) but with some canonicalization
         """
-        if isinstance(self, This) or isinstance(self, Root):
+        if isinstance(self, (This, Root)):
             return child
         elif isinstance(child, This):
             return self
@@ -76,7 +76,7 @@ class JSONPath(object):
             return DatumInContext(value, path=Root(), context=None)
 
 
-class DatumInContext(object):
+class DatumInContext:
     """
     Represents a datum along a path from a context.
 
@@ -136,7 +136,7 @@ class DatumInContext(object):
             return pseudopath
 
     def __repr__(self):
-        return "%s(value=%r, path=%r, context=%r)" % (self.__class__.__name__, self.value, self.path, self.context)
+        return f"{self.__class__.__name__}(value={self.value!r}, path={self.path!r}, context={self.context!r})"
 
     def __eq__(self, other):
         return (
@@ -187,7 +187,7 @@ class AutoIdForDatum(DatumInContext):
         return self.datum
 
     def __repr__(self):
-        return "%s(%r)" % (self.__class__.__name__, self.datum)
+        return f"{self.__class__.__name__}({self.datum!r})"
 
     def in_context(self, context, path):
         return AutoIdForDatum(self.datum.in_context(context=context, path=path))
@@ -214,7 +214,7 @@ class Root(JSONPath):
     def update(self, data, val):
         return val
 
-    def filter(self, fn, data):
+    def filter(self, fn, data):  # noqa: A003
         return data if fn(data) else None
 
     def __str__(self):
@@ -238,7 +238,7 @@ class This(JSONPath):
     def update(self, data, val):
         return val
 
-    def filter(self, fn, data):
+    def filter(self, fn, data):  # noqa: A003
         return data if fn(data) else None
 
     def __str__(self):
@@ -296,7 +296,7 @@ class Child(JSONPath):
             self.right.update_or_create(datum.value, val)
         return _clean_list_keys(data)
 
-    def filter(self, fn, data):
+    def filter(self, fn, data):  # noqa: A003
         for datum in self.left.find(data):
             self.right.filter(fn, datum.value)
         return data
@@ -305,10 +305,10 @@ class Child(JSONPath):
         return isinstance(other, Child) and self.left == other.left and self.right == other.right
 
     def __str__(self):
-        return "%s.%s" % (self.left, self.right)
+        return f"{self.left}.{self.right}"
 
     def __repr__(self):
-        return "%s(%r, %r)" % (self.__class__.__name__, self.left, self.right)
+        return f"{self.__class__.__name__}({self.left!r}, {self.right!r})"
 
 
 class Parent(JSONPath):
@@ -354,13 +354,13 @@ class Where(JSONPath):
             datum.path.update(data, val)
         return data
 
-    def filter(self, fn, data):
+    def filter(self, fn, data):  # noqa: A003
         for datum in self.find(data):
             datum.path.filter(fn, datum.value)
         return data
 
     def __str__(self):
-        return "%s where %s" % (self.left, self.right)
+        return f"{self.left} where {self.right}"
 
     def __eq__(self, other):
         return isinstance(other, Where) and other.left == self.left and other.right == self.right
@@ -402,7 +402,7 @@ class Descendants(JSONPath):
             elif isinstance(datum.value, dict):
                 recursive_matches = [
                     submatch
-                    for field in datum.value.keys()
+                    for field in datum.value
                     for submatch in match_recursively(
                         DatumInContext(datum.value[field], context=datum, path=Fields(field))
                     )
@@ -427,7 +427,7 @@ class Descendants(JSONPath):
 
         def update_recursively(data):
             # Update only mutable values corresponding to JSON types
-            if not (isinstance(data, list) or isinstance(data, dict)):
+            if not (isinstance(data, (list, dict))):
                 return
 
             self.right.update(data, val)
@@ -438,7 +438,7 @@ class Descendants(JSONPath):
                     update_recursively(data[i])
 
             elif isinstance(data, dict):
-                for field in data.keys():
+                for field in data:
                     update_recursively(data[field])
 
         for submatch in left_matches:
@@ -446,7 +446,7 @@ class Descendants(JSONPath):
 
         return data
 
-    def filter(self, fn, data):
+    def filter(self, fn, data):  # noqa: A003
         # Get all left matches into a list
         left_matches = self.left.find(data)
         if not isinstance(left_matches, list):
@@ -454,7 +454,7 @@ class Descendants(JSONPath):
 
         def filter_recursively(data):
             # Update only mutable values corresponding to JSON types
-            if not (isinstance(data, list) or isinstance(data, dict)):
+            if not (isinstance(data, (list, dict))):
                 return
 
             self.right.filter(fn, data)
@@ -465,7 +465,7 @@ class Descendants(JSONPath):
                     filter_recursively(data[i])
 
             elif isinstance(data, dict):
-                for field in data.keys():
+                for field in data:
                     filter_recursively(data[field])
 
         for submatch in left_matches:
@@ -474,13 +474,13 @@ class Descendants(JSONPath):
         return data
 
     def __str__(self):
-        return "%s..%s" % (self.left, self.right)
+        return f"{self.left}..{self.right}"
 
     def __eq__(self, other):
         return isinstance(other, Descendants) and self.left == other.left and self.right == other.right
 
     def __repr__(self):
-        return "%s(%r, %r)" % (self.__class__.__name__, self.left, self.right)
+        return f"{self.__class__.__name__}({self.left!r}, {self.right!r})"
 
 
 class Union(JSONPath):
@@ -533,6 +533,32 @@ class Intersect(JSONPath):
         return found_matches
 
 
+class Contains(JSONPath):
+    """
+    Checks if an array contains the specified element.
+    """
+
+    def __init__(self, left, right):
+        self.left = left
+        self.right = right
+
+    def is_singular(self):
+        return False
+
+    def update(self, data, val):
+        for datum in self.find(data):
+            datum.path.update(data, val)
+        return data
+
+    def filter(self, fn, data):  # noqa: A003
+        for datum in self.find(data):
+            datum.path.filter(fn, datum.value)
+        return data
+
+    def find(self, data):
+        return [subdata for subdata in self.left.find(data) if self.right.fields[0] in subdata.value]
+
+
 class Fields(JSONPath):
     """
     JSONPath referring to some field of the current object.
@@ -566,7 +592,7 @@ class Fields(JSONPath):
         else:
             try:
                 fields = tuple(datum.value.keys())
-                return fields if auto_id_field is None else fields + (auto_id_field,)
+                return fields if auto_id_field is None else (*fields, auto_id_field)
             except AttributeError:
                 return ()
 
@@ -593,25 +619,24 @@ class Fields(JSONPath):
                 if field not in data and create:
                     data[field] = {}
                 if field in data:
-                    if hasattr(val, "__call__"):
+                    if callable(val):
                         val(data[field], data, field)
                     else:
                         data[field] = val
         return data
 
-    def filter(self, fn, data):
+    def filter(self, fn, data):  # noqa: A003
         if data is not None:
             for field in self.reified_fields(DatumInContext.wrap(data)):
-                if field in data:
-                    if fn(data[field]):
-                        data.pop(field)
+                if field in data and fn(data[field]):
+                    data.pop(field)
         return data
 
     def __str__(self):
         return ",".join(map(str, self.fields))
 
     def __repr__(self):
-        return "%s(%s)" % (self.__class__.__name__, ",".join(map(repr, self.fields)))
+        return "{}({})".format(self.__class__.__name__, ",".join(map(repr, self.fields)))
 
     def __eq__(self, other):
         return isinstance(other, Fields) and tuple(self.fields) == tuple(other.fields)
@@ -657,13 +682,13 @@ class Index(JSONPath):
             if data == {}:
                 data = _create_list_key(data)
             self._pad_value(data)
-        if hasattr(val, "__call__"):
-            val.__call__(data[self.index], data, self.index)
+        if callable(val):
+            val(data[self.index], data, self.index)
         elif len(data) > self.index:
             data[self.index] = val
         return data
 
-    def filter(self, fn, data):
+    def filter(self, fn, data):  # noqa: A003
         if fn(data[self.index]):
             data.pop(self.index)  # relies on mutation :(
         return data
@@ -675,7 +700,7 @@ class Index(JSONPath):
         return "[%i]" % self.index
 
     def __repr__(self):
-        return "%s(index=%r)" % (self.__class__.__name__, self.index)
+        return f"{self.__class__.__name__}(index={self.index!r})"
 
     def _pad_value(self, value):
         if len(value) <= self.index:
@@ -739,7 +764,7 @@ class Slice(JSONPath):
             datum.path.update(data, val)
         return data
 
-    def filter(self, fn, data):
+    def filter(self, fn, data):  # noqa: A003
         while True:
             length = len(data)
             for datum in self.find(data):
@@ -755,14 +780,14 @@ class Slice(JSONPath):
         if self.start is None and self.end is None and self.step is None:
             return "[*]"
         else:
-            return "[%s%s%s]" % (
+            return "[{}{}{}]".format(
                 self.start or "",
                 ":%d" % self.end if self.end else "",
                 ":%d" % self.step if self.step else "",
             )
 
     def __repr__(self):
-        return "%s(start=%r,end=%r,step=%r)" % (self.__class__.__name__, self.start, self.end, self.step)
+        return f"{self.__class__.__name__}(start={self.start!r},end={self.end!r},step={self.step!r})"
 
     def __eq__(self, other):
         return (

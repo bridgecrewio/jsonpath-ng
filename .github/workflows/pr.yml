@@ -10,13 +10,7 @@ env:
 
 jobs:
   pre-commit:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b  # v3.2.0
-      - uses: actions/setup-python@5ccb29d8773c3f3f653e1705f474dfaa8a06a912  # v4.4.0
-        with:
-          python-version: ${{ env.MIN_PYTHON_VERSION }}
-      - uses: pre-commit/action@646c83fcd040023954eafda54b4db0192ce70507  # v3.0.0
+    uses: bridgecrewio/gha-reusable-workflows/.github/workflows/pre-commit.yaml@main
 
   tests:
     needs: pre-commit

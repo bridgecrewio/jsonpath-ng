@@ -24,7 +24,7 @@ OPERATOR_MAP = {  # pragma: no cover
     "<": operator.lt,
     ">=": operator.ge,
     ">": operator.gt,
-    "=~": lambda a, b: True if re.search(b, a) else False,
+    "=~": lambda a, b: bool(re.search(b, a)),
 }
 
 
@@ -58,20 +58,46 @@ class Filter(JSONPath):
             for index, item in enumerate(data):
                 should_update = len(self.expressions) == len(list(filter(lambda x: x.find(item), self.expressions)))
                 if should_update:
-                    if hasattr(val, "__call__"):
-                        val.__call__(data[index], data, index)
+                    if callable(val):
+                        val(data[index], data, index)
                     else:
                         data[index] = val
         return data
 
     def __repr__(self):
-        return "%s(%r)" % (self.__class__.__name__, self.expressions)
+        return f"{self.__class__.__name__}({self.expressions!r})"
 
     def __str__(self):
         return "[?%s]" % self.expressions
 
     def __eq__(self, other):
         return isinstance(other, Filter) and self.expressions == other.expressions
+
+
+class Negate(JSONPath):
+    """Negate a JSONQuery expression"""
+
+    def __init__(self, expressions):
+        self.expressions = expressions
+
+    def find(self, datum):
+        if not self.expressions:
+            return datum
+
+        datum = DatumInContext.wrap(datum)
+
+        if isinstance(datum.value, dict):
+            # needed to use filter on normal dicts
+            datum.value = [datum.value]
+
+        if not isinstance(datum.value, list):
+            return []
+
+        return [
+            DatumInContext(datum.value[i], path=Index(i), context=datum)
+            for i in range(len(datum.value))
+            if (len(self.expressions) != len(list(filter(lambda x: x.find(datum.value[i]), self.expressions))))
+        ]
 
 
 class Expression(JSONPath):
@@ -119,12 +145,12 @@ class Expression(JSONPath):
 
     def __repr__(self):
         if self.op is None:
-            return "%s(%r)" % (self.__class__.__name__, self.target)
+            return f"{self.__class__.__name__}({self.target!r})"
         else:
-            return "%s(%r %s %r)" % (self.__class__.__name__, self.target, self.op, self.value)
+            return f"{self.__class__.__name__}({self.target!r} {self.op} {self.value!r})"
 
     def __str__(self):
         if self.op is None:
             return "%s" % self.target
         else:
-            return "%s %s %s" % (self.target, self.op, self.value)
+            return f"{self.target} {self.op} {self.value}"

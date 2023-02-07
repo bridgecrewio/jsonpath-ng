@@ -1,4 +1,3 @@
-import io
 from pathlib import Path
 
 import setuptools
@@ -23,7 +22,7 @@ setuptools.setup(
     author_email="meet@bridgecrew.io",
     url="https://github.com/bridgecrewio/jsonpath-ng",
     license="Apache License 2.0",
-    long_description=io.open("README.rst", encoding="utf-8").read(),
+    long_description=Path("README.rst").read_text(encoding="utf-8"),
     long_description_content_type="text/x-rst",
     packages=[
         "bc_jsonpath_ng",
