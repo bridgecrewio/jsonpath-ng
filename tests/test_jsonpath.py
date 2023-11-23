@@ -17,7 +17,6 @@ class TestDatumInContext(unittest.TestCase):
         logging.basicConfig()
 
     def test_DatumInContext_init(self):  # noqa: N802
-
         test_datum1 = DatumInContext(3)
         assert test_datum1.path == This()
         assert test_datum1.full_path == This()
@@ -39,7 +38,6 @@ class TestDatumInContext(unittest.TestCase):
         assert test_datum3.full_path == Fields("baz").child(Fields("foo"))
 
     def test_DatumInContext_in_context(self):
-
         assert DatumInContext(3).in_context(path=Fields("foo"), context=DatumInContext("whatever")) == DatumInContext(
             3, path=Fields("foo"), context=DatumInContext("whatever")
         )

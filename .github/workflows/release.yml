@@ -11,10 +11,11 @@ on:
       - ".pre-commit-config.yaml"
       - ".github/**"
 
-permissions: read-all
+permissions:
+  contents: read
 
 env:
-  MIN_PYTHON_VERSION: "3.7"
+  MIN_PYTHON_VERSION: "3.8"
 
 jobs:
   tests:

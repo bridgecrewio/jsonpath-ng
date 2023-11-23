@@ -12,7 +12,7 @@ def get_version():
 setuptools.setup(
     name="bc-jsonpath-ng",
     version=get_version(),
-    python_requires=">=3.7",
+    python_requires=">=3.8",
     description=(
         "A final implementation of JSONPath for Python that aims to be "
         "standard compliant, including arithmetic and binary comparison "
@@ -46,7 +46,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",

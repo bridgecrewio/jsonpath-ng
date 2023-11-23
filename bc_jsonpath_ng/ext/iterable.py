@@ -54,7 +54,7 @@ class SortedThis(This):
         if isinstance(datum.value, dict) and self.expressions:
             return datum
 
-        if isinstance(datum.value, dict) or isinstance(datum.value, list):
+        if isinstance(datum.value, (dict, list)):
             key = functools.cmp_to_key(self._compare) if self.expressions else None
             return [DatumInContext.wrap(sorted(datum.value, key=key))]
         return datum

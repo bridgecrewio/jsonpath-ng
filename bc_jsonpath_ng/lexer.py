@@ -101,8 +101,7 @@ class JsonPathLexer:
 
     def t_singlequote_error(self, t):
         raise JsonPathLexerError(
-            "Error on line %s, col %s while lexing singlequoted field: Unexpected character: %s "
-            % (t.lexer.lineno, t.lexpos - t.lexer.latest_newline, t.value[0])
+            f"Error on line {t.lexer.lineno}, col {t.lexpos - t.lexer.latest_newline} while lexing singlequoted field: Unexpected character: {t.value[0]} "
         )
 
     # Double-quoted strings
@@ -132,8 +131,7 @@ class JsonPathLexer:
 
     def t_doublequote_error(self, t):
         raise JsonPathLexerError(
-            "Error on line %s, col %s while lexing doublequoted field: Unexpected character: %s "
-            % (t.lexer.lineno, t.lexpos - t.lexer.latest_newline, t.value[0])
+            f"Error on line {t.lexer.lineno}, col {t.lexpos - t.lexer.latest_newline} while lexing doublequoted field: Unexpected character: {t.value[0]} "
         )
 
     # Back-quoted "magic" operators
@@ -163,8 +161,7 @@ class JsonPathLexer:
 
     def t_backquote_error(self, t):
         raise JsonPathLexerError(
-            "Error on line %s, col %s while lexing backquoted operator: Unexpected character: %s "
-            % (t.lexer.lineno, t.lexpos - t.lexer.latest_newline, t.value[0])
+            f"Error on line {t.lexer.lineno}, col {t.lexpos - t.lexer.latest_newline} while lexing backquoted operator: Unexpected character: {t.value[0]} "
         )
 
     # Counting lines, handling errors
@@ -175,8 +172,7 @@ class JsonPathLexer:
 
     def t_error(self, t):
         raise JsonPathLexerError(
-            "Error on line %s, col %s: Unexpected character: %s "
-            % (t.lexer.lineno, t.lexpos - t.lexer.latest_newline, t.value[0])
+            f"Error on line {t.lexer.lineno}, col {t.lexpos - t.lexer.latest_newline}: Unexpected character: {t.value[0]} "
         )
 
 
