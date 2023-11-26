@@ -26,7 +26,7 @@ select = [
 exclude = [
     "tests"  # exclude for now
 ]
-ignore = ["ARG002", "E501"]
+ignore = ["ARG002", "E501", "RUF012"]
 per-file-ignores = { "tests/**/*" = ["S101"] }
 
 target-version = "py37"

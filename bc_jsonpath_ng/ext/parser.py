@@ -28,7 +28,7 @@ class ExtendedJsonPathLexer(lexer.JsonPathLexer):
     """Custom LALR-lexer for JsonPath"""
 
     literals = [*lexer.JsonPathLexer.literals, "?", "@", "+", "*", "/", "-", "!"]
-    tokens = ["BOOL", *parser.JsonPathLexer.tokens] + ["FILTER_OP", "SORT_DIRECTION", "FLOAT"]
+    tokens = ["BOOL", *parser.JsonPathLexer.tokens, "FILTER_OP", "SORT_DIRECTION", "FLOAT"]
 
     t_FILTER_OP = r"=~|==?|<=|>=|!=|<|>"  # noqa: N815
 
@@ -173,9 +173,7 @@ class ExtentedJsonPathParser(parser.JsonPathParser):
         "jsonpath : '!' expressions"
         p[0] = _filter.Negate(p[2])
 
-    precedence = [("left", "+", "-"), ("left", "*", "/"), *parser.JsonPathParser.precedence] + [
-        ("nonassoc", "ID"),
-    ]
+    precedence = [("left", "+", "-"), ("left", "*", "/"), *parser.JsonPathParser.precedence, ("nonassoc", "ID")]
 
 
 def parse(path: str, debug: bool = False) -> JSONPath:

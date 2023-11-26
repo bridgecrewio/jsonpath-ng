@@ -3,14 +3,17 @@ name: PR
 on:
   pull_request:
 
-permissions: read-all
+permissions:
+  contents: read
 
 env:
-  MIN_PYTHON_VERSION: "3.7"
+  MIN_PYTHON_VERSION: "3.8"
 
 jobs:
   pre-commit:
     uses: bridgecrewio/gha-reusable-workflows/.github/workflows/pre-commit.yaml@main
+    with:
+      python-version: "3.8"
 
   tests:
     needs: pre-commit
@@ -19,7 +22,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
       fail-fast: false
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1

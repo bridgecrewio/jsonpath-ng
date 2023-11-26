@@ -57,7 +57,6 @@ class JsonPathParser:
         return self.parse_token_stream(lexer.tokenize(string))
 
     def parse_token_stream(self, token_iterator, start_symbol: str = "jsonpath"):
-
         # Since PLY has some crufty aspects and dumps files, we try to keep them local
         # However, we need to derive the name of the output Python file :-/
         output_directory = os.path.dirname(__file__)
